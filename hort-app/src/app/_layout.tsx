@@ -1,3 +1,4 @@
+import { AppFonts } from '@/shared/theme/AppFonts';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SessionProvider, useSession } from '@/shared/session/SessionProvider';
@@ -26,8 +27,10 @@ function Navigation() {
 }
 export default function RootLayout() {
   return (
-    <SessionProvider>
-      <Navigation />
-    </SessionProvider>
+    <AppFonts>
+      <SessionProvider>
+        <Navigation />
+      </SessionProvider>
+    </AppFonts>
   );
 }

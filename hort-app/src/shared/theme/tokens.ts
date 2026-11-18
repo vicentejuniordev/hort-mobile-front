@@ -1,0 +1,28 @@
+export const theme = {
+  colors: {
+    background: '#FFFFFD',
+    surface: '#FFFFFF',
+    profileBackground: '#FAF9F6',
+    primary: '#2E7D32',
+    primaryPressed: '#236127',
+    loginBackground: '#3BA55D',
+    loginButton: '#00E91B',
+    inputBackground: '#C1BFEB',
+    text: '#000000',
+    muted: '#555555',
+    link: '#0F1AEE',
+    accent: '#FDE40B',
+    error: '#A51D25',
+    disabled: '#D8DDD8',
+    overlay: 'rgba(0, 0, 0, 0.45)',
+  },
+  fonts: {
+    regular: 'PoppinsRegular',
+    medium: 'PoppinsMedium',
+    semibold: 'PoppinsSemiBold',
+    bold: 'PoppinsBold',
+    footer: 'IstokWebBold',
+  },
+  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
+  radius: { button: 10, input: 15, card: 40, section: 56 },
+} as const;
