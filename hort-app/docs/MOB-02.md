@@ -2,6 +2,12 @@
 
 Status: implementação e verificações locais realizadas; aguardando aprovação visual e supervisão no Android. MOB-01 teve conexão e login confirmados pelo responsável em 18/11/2026, conforme registro no PR #1.
 
+## Revisão do login após supervisão
+
+O responsável solicitou refazer a tela de login antes de prosseguir. A nova versão substitui a composição do nó `310:809` por um layout claro, logo Hort, título em verde escuro, campos com borda e foco, botão verde da marca e links com contraste. Os ícones sociais continuam visíveis com os avisos combinados, agora em botões contornados. Foi acrescentado Mostrar/Ocultar senha. Boas-vindas e escolha de perfil permanecem com a referência original.
+
+Lint, typecheck, nove testes de transporte, verificação do formulário no preview e bundle Android foram repetidos para a revisão. A nova composição foi inspecionada em 393×852 e 320×640. A aprovação visual e a execução no Android continuam pendentes. Prévia local: `/tmp/hort-login-redesign-393.png`.
+
 ## Entrega
 
 - Inventário de telas web/Figma, jornadas, formulários e lacunas de contrato em [MOB-02_DESIGN_INVENTORY.md](./MOB-02_DESIGN_INVENTORY.md).
@@ -44,7 +50,7 @@ Com backend e `.env.local` já configurados como na MOB-01, execute `npm ci` se 
 - [ ] “Faça Login” e “Cadastre-se” navegam corretamente.
 - [ ] Google/WhatsApp/Facebook abrem o aviso de indisponibilidade; “Entendi” e Voltar do Android fecham o aviso.
 - [ ] Campos vazios/e-mail inválido mostram erro; Avançar muda o foco para senha e Enviar tenta o login.
-- [ ] A senha fica oculta; teclado não impede rolar até o botão de entrar.
+- [ ] A senha inicia oculta e pode ser mostrada/ocultada; teclado não impede rolar até o botão de entrar.
 - [ ] Conta real de cliente/produtor entra na área correspondente; erro real permite corrigir e tentar novamente.
 - [ ] Botão de conexão continua acessível no rodapé do login em desenvolvimento.
 - [ ] Tela estreita e fonte ampliada permitem ler, rolar e acionar todos os controles.

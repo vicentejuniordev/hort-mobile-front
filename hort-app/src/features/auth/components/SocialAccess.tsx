@@ -1,3 +1,4 @@
+import { theme } from '@/shared/theme/tokens';
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -11,14 +12,22 @@ const providers = [
 export function SocialAccess({
   compact = false,
   disabled = false,
+  outlined = false,
 }: {
   compact?: boolean;
   disabled?: boolean;
+  outlined?: boolean;
 }) {
   const [provider, setProvider] = useState<string | null>(null);
   return (
     <>
-      <View style={[styles.row, compact && styles.compactRow]}>
+      <View
+        style={[
+          styles.row,
+          compact && styles.compactRow,
+          outlined && styles.outlinedRow,
+        ]}
+      >
         {providers.map(({ name, source }, index) => (
           <Pressable
             key={name}
@@ -30,6 +39,7 @@ export function SocialAccess({
             onPress={() => setProvider(name)}
             style={({ pressed }) => [
               styles.button,
+              outlined && styles.outlinedButton,
               pressed && { opacity: 0.6 },
             ]}
           >
@@ -39,7 +49,9 @@ export function SocialAccess({
               style={
                 compact
                   ? [{ width: 28 + index, height: index === 0 ? 29 : 30 }]
-                  : styles.image
+                  : outlined
+                    ? styles.outlinedImage
+                    : styles.image
               }
               accessible={false}
             />
@@ -71,5 +83,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  outlinedRow: { gap: 16, marginLeft: 0 },
+  outlinedButton: {
+    width: 64,
+    height: 56,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+  },
+  outlinedImage: { width: 24, height: 24 },
   image: { width: 33, height: 33 },
 });
