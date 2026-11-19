@@ -112,3 +112,7 @@ Tokens em `src/shared/theme/tokens.ts`: primário `#2E7D32`, seção de login `#
 Componentes criados: Button (normal/login/compacto, pressionado, desabilitado e carregando), Input (label/erro/ref nativa), PublicScreen (áreas seguras, teclado e rolagem), NoticeDialog, BackButton e SocialAccess. O Screen técnico da MOB-01 continua atendendo as áreas privadas provisórias; não houve redesenho dessas áreas.
 
 Layout usa fluxo flexível e rolagem, com posicionamento absoluto somente para as ilustrações decorativas. As áreas de toque têm pelo menos 48 dp; os botões de perfil ficam visualmente mais altos que os 36 px do Figma. Em telas menores ou com fonte ampliada o conteúdo pode rolar. O teste nativo de teclado, leitor de tela e fonte ampliada depende da supervisão Android. O contraste dos textos pequenos branco/amarelo no verde do rodapé do login deve ser revisado com o responsável pelo design antes da publicação; as cores originais foram mantidas nesta comparação.
+
+## Revisão solicitada pelo responsável
+
+Após a entrega inicial, o responsável pediu para refazer o login. A nova composição usa fundo claro, verde escuro nos títulos, campos neutros com borda/foco, botão primário da marca e links verdes. Essa solicitação substitui a fidelidade visual ao nó `310:809`; boas-vindas e escolha de perfil conservam as referências originais. O novo login não usa o rodapé de texto branco/amarelo sobre verde apontado acima. Os controles sociais mantêm o aviso aprovado e a autenticação continua real.

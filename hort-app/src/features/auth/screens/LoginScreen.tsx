@@ -18,6 +18,7 @@ export default function LoginScreen() {
   const { signIn } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [feedback, setFeedback] = useState('');
@@ -82,84 +83,109 @@ export default function LoginScreen() {
   }
   return (
     <PublicScreen>
-      <View style={styles.header}>
+      <View style={styles.navigation}>
         <BackButton disabled={busy} />
-        <Image
-          source={authAssets.leaves}
-          style={styles.leaves}
-          accessible={false}
-        />
       </View>
-      <Text accessibilityRole="header" style={styles.welcome}>
-        SEJA BEM-VINDO!
-      </Text>
-      <Text style={styles.subtitle}>EXPLORE NOVAS POSSIBILIDADES</Text>
-      <View style={styles.section}>
+      <View style={styles.content}>
+        <Image
+          source={authAssets.logo}
+          contentFit="contain"
+          accessibilityLabel="Hort"
+          style={styles.logo}
+        />
         <Text accessibilityRole="header" style={styles.title}>
-          LOGIN
+          Bem-vindo de volta.
         </Text>
-        <View style={styles.card}>
-          <View style={styles.fields}>
+        <Text style={styles.subtitle}>
+          Entre na sua conta e fique mais perto de quem produz.
+        </Text>
+        <View style={styles.form}>
+          <Input
+            label="E-mail"
+            appearance="outlined"
+            labelGap={8}
+            placeholder="seu@email.com"
+            value={email}
+            onChangeText={(value) => {
+              setEmail(value);
+              setErrors((current) => ({ ...current, email: undefined }));
+              setFeedback('');
+            }}
+            error={errors.email}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="email-address"
+            autoComplete="email"
+            editable={!busy}
+            returnKeyType="next"
+            onSubmitEditing={() => passwordInput.current?.focus()}
+          />
+          <View style={styles.passwordField}>
             <Input
-              label="E-MAIL"
-              value={email}
+              ref={passwordInput}
+              label="Senha"
+              appearance="outlined"
+              labelGap={8}
+              placeholder="Digite sua senha"
+              value={password}
               onChangeText={(value) => {
-                setEmail(value);
-                setErrors((current) => ({ ...current, email: undefined }));
+                setPassword(value);
+                setErrors((current) => ({ ...current, password: undefined }));
                 setFeedback('');
               }}
-              error={errors.email}
+              error={errors.password}
+              secureTextEntry={!showPassword}
               autoCapitalize="none"
               autoCorrect={false}
-              keyboardType="email-address"
-              autoComplete="email"
+              autoComplete="current-password"
               editable={!busy}
-              returnKeyType="next"
-              onSubmitEditing={() => passwordInput.current?.focus()}
+              returnKeyType="go"
+              onSubmitEditing={() => void run(true)}
+              rightElement={
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    showPassword ? 'Ocultar senha' : 'Mostrar senha'
+                  }
+                  disabled={busy}
+                  onPress={() => setShowPassword((value) => !value)}
+                  style={styles.visibilityButton}
+                >
+                  <Text style={styles.visibilityText}>
+                    {showPassword ? 'Ocultar' : 'Mostrar'}
+                  </Text>
+                </Pressable>
+              }
             />
-            <View style={styles.passwordField}>
-              <Input
-                ref={passwordInput}
-                label="SENHA"
-                labelGap={11}
-                value={password}
-                onChangeText={(value) => {
-                  setPassword(value);
-                  setErrors((current) => ({ ...current, password: undefined }));
-                  setFeedback('');
-                }}
-                error={errors.password}
-                secureTextEntry
-                autoCapitalize="none"
-                autoComplete="current-password"
-                editable={!busy}
-                returnKeyType="go"
-                onSubmitEditing={() => void run(true)}
-              />
-            </View>
           </View>
           {!!feedback && (
-            <Text
-              accessibilityRole="alert"
-              accessibilityLiveRegion="polite"
-              style={styles.feedback}
+            <View
+              style={[
+                styles.feedbackBox,
+                feedback === 'API disponível.' && styles.successBox,
+              ]}
             >
-              {feedback}
-            </Text>
+              <Text
+                accessibilityRole="alert"
+                accessibilityLiveRegion="polite"
+                style={[
+                  styles.feedback,
+                  feedback === 'API disponível.' && styles.successText,
+                ]}
+              >
+                {feedback}
+              </Text>
+            </View>
           )}
           <Button
-            label={busy ? 'AGUARDE…' : 'ENTRAR'}
-            variant="login"
+            label={busy ? 'Entrando…' : 'Entrar'}
             loading={busy}
             onPress={() => void run(true)}
             style={styles.submit}
           />
-          <View style={styles.social}>
-            <SocialAccess disabled={busy} />
-          </View>
         </View>
         <View style={styles.signup}>
-          <Text style={styles.signupText}>Não tem conta ainda?</Text>
+          <Text style={styles.signupText}>Ainda não tem conta?</Text>
           <Pressable
             accessibilityRole="link"
             disabled={busy}
@@ -168,6 +194,14 @@ export default function LoginScreen() {
           >
             <Text style={styles.signupLinkText}>Cadastre-se</Text>
           </Pressable>
+        </View>
+        <View style={styles.socialSection}>
+          <View style={styles.divider}>
+            <View style={styles.line} />
+            <Text style={styles.dividerText}>Outras formas de acesso</Text>
+            <View style={styles.line} />
+          </View>
+          <SocialAccess outlined disabled={busy} />
         </View>
         {__DEV__ && (
           <Pressable
@@ -186,107 +220,105 @@ export default function LoginScreen() {
   );
 }
 const styles = StyleSheet.create({
-  header: {
-    height: 72,
-    paddingTop: 10,
-    paddingLeft: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    overflow: 'hidden',
-  },
-  leaves: { width: 93, height: 55, marginRight: -9 },
-  welcome: {
-    marginTop: 11,
-    marginHorizontal: 16,
-    fontFamily: theme.fonts.bold,
-    fontSize: 23,
-    lineHeight: 35,
-    color: theme.colors.text,
+  navigation: { paddingTop: 8, paddingLeft: 12, height: 64 },
+  content: { paddingHorizontal: 28, paddingTop: 12, paddingBottom: 24 },
+  logo: { width: 160, height: 68, marginLeft: -12 },
+  title: {
+    marginTop: 24,
+    maxWidth: 280,
+    fontFamily: theme.fonts.semibold,
+    fontSize: 32,
+    lineHeight: 40,
+    letterSpacing: -0.8,
+    color: theme.colors.heading,
     includeFontPadding: false,
   },
   subtitle: {
-    marginTop: 13,
-    marginHorizontal: 22,
-    fontFamily: theme.fonts.medium,
+    marginTop: 12,
+    fontFamily: theme.fonts.regular,
     fontSize: 14,
-    lineHeight: 21,
-    color: theme.colors.text,
+    lineHeight: 22,
+    color: theme.colors.textSecondary,
     includeFontPadding: false,
   },
-  section: {
-    flexGrow: 1,
-    marginTop: 13,
-    marginHorizontal: -14,
-    borderTopLeftRadius: theme.radius.section,
-    borderTopRightRadius: theme.radius.section,
-    paddingTop: 37,
-    paddingHorizontal: 30,
-    paddingBottom: 26,
-    backgroundColor: theme.colors.loginBackground,
+  form: { marginTop: 28 },
+  passwordField: { marginTop: 20 },
+  submit: { marginTop: 24, minHeight: 56, borderRadius: 14 },
+  visibilityButton: {
+    minHeight: 48,
+    minWidth: 76,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
   },
-  title: {
-    fontFamily: theme.fonts.bold,
-    fontSize: 36,
-    lineHeight: 54,
-    color: theme.colors.surface,
+  visibilityText: {
+    fontFamily: theme.fonts.medium,
+    fontSize: 12,
+    lineHeight: 20,
+    color: theme.colors.primary,
     includeFontPadding: false,
-    textAlign: 'center',
-    marginBottom: 35,
   },
-  card: {
-    borderRadius: theme.radius.card,
-    paddingTop: 64,
-    paddingHorizontal: 24,
-    paddingBottom: 15,
-    backgroundColor: theme.colors.surface,
-  },
-  fields: { alignSelf: 'center', width: '100%', maxWidth: 280, marginLeft: 8 },
-  passwordField: { marginTop: 22 },
-  submit: { marginTop: 53, alignSelf: 'center', width: '100%', maxWidth: 250 },
-  social: { marginTop: 35 },
-  feedback: {
+  feedbackBox: {
     marginTop: 16,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: theme.colors.errorBackground,
+  },
+  feedback: {
     fontFamily: theme.fonts.medium,
     color: theme.colors.error,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 13,
+    lineHeight: 20,
     includeFontPadding: false,
   },
+  successBox: { backgroundColor: theme.colors.successBackground },
+  successText: { color: theme.colors.primary },
   signup: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
-    columnGap: 8,
-    marginTop: 15,
+    columnGap: 6,
+    marginTop: 12,
   },
   signupText: {
-    fontFamily: theme.fonts.footer,
-    fontSize: 15,
+    fontFamily: theme.fonts.regular,
+    fontSize: 13,
     lineHeight: 22,
-    color: theme.colors.surface,
+    color: theme.colors.textSecondary,
     includeFontPadding: false,
   },
   signupLink: { minHeight: 48, justifyContent: 'center' },
   signupLinkText: {
-    fontFamily: theme.fonts.footer,
-    fontSize: 15,
+    fontFamily: theme.fonts.semibold,
+    fontSize: 13,
     lineHeight: 22,
-    color: theme.colors.accent,
+    color: theme.colors.primary,
     includeFontPadding: false,
+  },
+  socialSection: { marginTop: 24, gap: 16 },
+  divider: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  line: { height: 1, flex: 1, backgroundColor: theme.colors.divider },
+  dividerText: {
+    fontFamily: theme.fonts.regular,
+    fontSize: 12,
+    lineHeight: 20,
+    color: theme.colors.textSecondary,
+    includeFontPadding: false,
+    flexShrink: 1,
+    textAlign: 'center',
   },
   diagnostics: {
     minHeight: 48,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 12,
   },
   diagnosticsText: {
-    fontFamily: theme.fonts.medium,
-    fontSize: 12,
+    fontFamily: theme.fonts.regular,
+    fontSize: 11,
     lineHeight: 18,
-    color: theme.colors.text,
-    textDecorationLine: 'underline',
+    color: theme.colors.textSecondary,
     includeFontPadding: false,
   },
 });
