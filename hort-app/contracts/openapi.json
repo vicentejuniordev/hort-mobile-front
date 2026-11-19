@@ -1,0 +1,3235 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Hort API",
+    "version": "1.0.0",
+    "description": "API para catálogo de hortaliças, planos, cestas, assinaturas e entregas programadas."
+  },
+  "paths": {
+    "/api/v1/assinaturas/": {
+      "get": {
+        "operationId": "assinaturas_list",
+        "summary": "Listar minhas assinaturas",
+        "parameters": [
+          {
+            "name": "ordering",
+            "required": false,
+            "in": "query",
+            "description": "Qual campo usar ao ordenar os resultados.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Um número de página dentro do conjunto de resultados paginado.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Número de resultados a serem retornados por página.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "Assinaturas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedAssinaturaList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "assinaturas_create",
+        "summary": "Contratar plano",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Chave única por tentativa de compra; reutilize em retries (1–128 caracteres)."
+          }
+        ],
+        "tags": [
+          "Assinaturas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContratarAssinaturaInput"
+              },
+              "examples": {
+                "NovaAssinatura": {
+                  "value": {
+                    "plano": 1,
+                    "programacoes": [
+                      {
+                        "cesta": 10,
+                        "dia_semana": 1
+                      },
+                      {
+                        "cesta": 11,
+                        "dia_semana": 4
+                      }
+                    ]
+                  },
+                  "summary": "Nova assinatura"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Assinatura"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/assinaturas/{id}/": {
+      "get": {
+        "operationId": "assinaturas_retrieve",
+        "summary": "Consultar minha assinatura",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Assinaturas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Assinatura"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/assinaturas/{id}/cancelar/": {
+      "post": {
+        "operationId": "assinaturas_cancelar_create",
+        "summary": "Cancelar assinatura",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este assinatura.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Assinaturas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Assinatura"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login/": {
+      "post": {
+        "operationId": "auth_login_create",
+        "description": "Autentica por e-mail e senha e retorna tokens de acesso e renovação.",
+        "summary": "Obter tokens JWT",
+        "tags": [
+          "Autenticação"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout/": {
+      "post": {
+        "operationId": "auth_logout_create",
+        "summary": "Encerrar todas as sessões JWT",
+        "tags": [
+          "Autenticação"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me/": {
+      "get": {
+        "operationId": "auth_me_retrieve",
+        "description": "Devolve o usuário dono do token (permissão padrão: IsAuthenticated).",
+        "summary": "Consultar usuário autenticado",
+        "tags": [
+          "Autenticação"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password-reset/": {
+      "post": {
+        "operationId": "auth_password_reset_create",
+        "summary": "Solicitar recuperação de senha",
+        "tags": [
+          "Autenticação"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitarSenhaInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {}
+        ],
+        "responses": {
+          "202": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password-reset/confirm/": {
+      "post": {
+        "operationId": "auth_password_reset_confirm_create",
+        "summary": "Redefinir senha",
+        "tags": [
+          "Autenticação"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedefinirSenhaInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {}
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh/": {
+      "post": {
+        "operationId": "auth_refresh_create",
+        "description": "Takes a refresh type JSON web token and returns an access type JSON web\ntoken if the refresh token is valid.",
+        "summary": "Renovar e rotacionar tokens",
+        "tags": [
+          "Autenticação"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Refresh"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register/cliente/": {
+      "post": {
+        "operationId": "auth_register_cliente_create",
+        "description": "Cria uma conta de cliente com endereço e CPF.",
+        "summary": "Cadastrar cliente",
+        "tags": [
+          "Autenticação"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CadastroClienteInput"
+              },
+              "examples": {
+                "CadastroDeCliente": {
+                  "value": {
+                    "nome": "Ana Souza",
+                    "email": "ana@example.com",
+                    "password": "SenhaForte123!",
+                    "password_confirm": "SenhaForte123!",
+                    "cpf": "529.982.247-25",
+                    "endereco": {
+                      "rua": "Rua das Flores, 100",
+                      "bairro": "Centro",
+                      "cidade": "São Paulo",
+                      "estado": "SP"
+                    }
+                  },
+                  "summary": "Cadastro de cliente"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {}
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register/produtor/": {
+      "post": {
+        "operationId": "auth_register_produtor_create",
+        "description": "Cria uma conta de produtor com endereço e CNPJ.",
+        "summary": "Cadastrar produtor",
+        "tags": [
+          "Autenticação"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CadastroProdutorInput"
+              },
+              "examples": {
+                "CadastroDeProdutor": {
+                  "value": {
+                    "nome": "João Silva",
+                    "email": "joao@example.com",
+                    "password": "SenhaForte123!",
+                    "password_confirm": "SenhaForte123!",
+                    "cnpj": "04.252.011/0001-10",
+                    "endereco": {
+                      "rua": "Rua dos Produtores, 20",
+                      "bairro": "Vila Verde",
+                      "cidade": "Campinas",
+                      "estado": "SP"
+                    }
+                  },
+                  "summary": "Cadastro de produtor"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {}
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/catalogo-planos/": {
+      "get": {
+        "operationId": "catalogo_planos_list",
+        "summary": "Listar catálogo de compra",
+        "parameters": [
+          {
+            "name": "ordering",
+            "required": false,
+            "in": "query",
+            "description": "Qual campo usar ao ordenar os resultados.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Um número de página dentro do conjunto de resultados paginado.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Número de resultados a serem retornados por página.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Um termo de busca.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Planos"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedPlanoCatalogoList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/catalogo-planos/{id}/": {
+      "get": {
+        "operationId": "catalogo_planos_retrieve",
+        "summary": "Consultar oferta e composição",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este plano.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Planos"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanoCatalogo"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/cestas/": {
+      "get": {
+        "operationId": "cestas_list",
+        "summary": "Listar cestas",
+        "parameters": [
+          {
+            "name": "ordering",
+            "required": false,
+            "in": "query",
+            "description": "Qual campo usar ao ordenar os resultados.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Um número de página dentro do conjunto de resultados paginado.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Número de resultados a serem retornados por página.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Um termo de busca.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Cestas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedCestaList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "cestas_create",
+        "summary": "Criar cesta",
+        "tags": [
+          "Cestas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cesta"
+              },
+              "examples": {
+                "NovaCesta": {
+                  "value": {
+                    "plano": 1,
+                    "nome": "Cesta de segunda-feira"
+                  },
+                  "summary": "Nova cesta"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cesta"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/cestas/{id}/": {
+      "get": {
+        "operationId": "cestas_retrieve",
+        "summary": "Consultar cesta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Cestas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cesta"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "cestas_update",
+        "summary": "Substituir cesta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este cesta.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Cestas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cesta"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cesta"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "cestas_partial_update",
+        "summary": "Renomear cesta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este cesta.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Cestas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedCesta"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cesta"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "cestas_destroy",
+        "summary": "Excluir cesta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este cesta.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Cestas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/enderecos/": {
+      "get": {
+        "operationId": "enderecos_list",
+        "summary": "Listar meus endereços",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Um número de página dentro do conjunto de resultados paginado.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Número de resultados a serem retornados por página.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "Endereços"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedEnderecoList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "enderecos_create",
+        "summary": "Cadastrar endereço",
+        "tags": [
+          "Endereços"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Endereco"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Endereco"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/enderecos/{id}/": {
+      "get": {
+        "operationId": "enderecos_retrieve",
+        "summary": "Consultar meu endereço",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este endereço.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Endereços"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Endereco"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "enderecos_update",
+        "summary": "Substituir endereço",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este endereço.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Endereços"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Endereco"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Endereco"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "enderecos_partial_update",
+        "summary": "Atualizar endereço",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este endereço.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Endereços"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedEndereco"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Endereco"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "enderecos_destroy",
+        "summary": "Excluir endereço",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este endereço.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Endereços"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/entregas-programadas/": {
+      "get": {
+        "operationId": "entregas_programadas_list",
+        "summary": "Listar minhas entregas programadas",
+        "parameters": [
+          {
+            "name": "ordering",
+            "required": false,
+            "in": "query",
+            "description": "Qual campo usar ao ordenar os resultados.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Um número de página dentro do conjunto de resultados paginado.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Número de resultados a serem retornados por página.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "Entregas programadas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedEntregaProgramadaListList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/entregas-programadas/{id}/": {
+      "get": {
+        "operationId": "entregas_programadas_retrieve",
+        "summary": "Consultar entrega programada",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Entregas programadas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntregaProgramadaList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/health/": {
+      "get": {
+        "operationId": "health_retrieve",
+        "summary": "Verificar disponibilidade da API",
+        "tags": [
+          "Sistema"
+        ],
+        "security": [
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/itens-cesta/": {
+      "get": {
+        "operationId": "itens_cesta_list",
+        "summary": "Listar itens das cestas",
+        "parameters": [
+          {
+            "name": "ordering",
+            "required": false,
+            "in": "query",
+            "description": "Qual campo usar ao ordenar os resultados.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Um número de página dentro do conjunto de resultados paginado.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Número de resultados a serem retornados por página.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "Cestas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedHortalicaCestaList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "itens_cesta_create",
+        "summary": "Adicionar hortaliça à cesta",
+        "tags": [
+          "Cestas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HortalicaCesta"
+              },
+              "examples": {
+                "ItemDaCesta": {
+                  "value": {
+                    "cesta": 1,
+                    "hortalica": 2,
+                    "quantidade": "1.500"
+                  },
+                  "summary": "Item da cesta"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HortalicaCesta"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/itens-cesta/{id}/": {
+      "get": {
+        "operationId": "itens_cesta_retrieve",
+        "summary": "Consultar item da cesta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Cestas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HortalicaCesta"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "itens_cesta_partial_update",
+        "summary": "Alterar quantidade do item",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este item da cesta.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Cestas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedHortalicaCesta"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HortalicaCesta"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "itens_cesta_destroy",
+        "summary": "Remover item da cesta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este item da cesta.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Cestas"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/planos/": {
+      "get": {
+        "operationId": "planos_list",
+        "summary": "Listar planos",
+        "parameters": [
+          {
+            "name": "ordering",
+            "required": false,
+            "in": "query",
+            "description": "Qual campo usar ao ordenar os resultados.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Um número de página dentro do conjunto de resultados paginado.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Número de resultados a serem retornados por página.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Um termo de busca.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Planos"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedPlanoList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "planos_create",
+        "summary": "Criar plano",
+        "tags": [
+          "Planos"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Plano"
+              },
+              "examples": {
+                "NovoPlano": {
+                  "value": {
+                    "nome": "Cesta semanal orgânica",
+                    "categoria": "Hortaliças",
+                    "periodicidade_semanal": 1,
+                    "is_ativo": true
+                  },
+                  "summary": "Novo plano"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plano"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/planos/{id}/": {
+      "get": {
+        "operationId": "planos_retrieve",
+        "summary": "Consultar plano",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Planos"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plano"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "planos_update",
+        "summary": "Substituir plano",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este plano.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Planos"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Plano"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plano"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "planos_partial_update",
+        "summary": "Atualizar plano",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este plano.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Planos"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedPlano"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plano"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "planos_destroy",
+        "summary": "Excluir plano",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este plano.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Planos"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/products/": {
+      "get": {
+        "operationId": "products_list",
+        "summary": "Listar hortaliças do produtor",
+        "parameters": [
+          {
+            "name": "ordering",
+            "required": false,
+            "in": "query",
+            "description": "Qual campo usar ao ordenar os resultados.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Um número de página dentro do conjunto de resultados paginado.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Número de resultados a serem retornados por página.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Um termo de busca.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Hortaliças"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedProductList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "products_create",
+        "summary": "Cadastrar hortaliça",
+        "tags": [
+          "Hortaliças"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              },
+              "examples": {
+                "NovaHortaliça": {
+                  "value": {
+                    "name": "Cenoura",
+                    "description": "Cenoura orgânica",
+                    "category": "legume",
+                    "price": "5.90",
+                    "stock": 100,
+                    "unit": "kg",
+                    "is_active": true
+                  },
+                  "summary": "Nova hortaliça"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/products/{id}/": {
+      "get": {
+        "operationId": "products_retrieve",
+        "summary": "Consultar hortaliça",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "Hortaliças"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "products_update",
+        "summary": "Substituir hortaliça",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este product.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Hortaliças"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "products_partial_update",
+        "summary": "Atualizar hortaliça",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este product.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Hortaliças"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedProduct"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "products_destroy",
+        "summary": "Excluir hortaliça",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Um valor inteiro único que identifica este product.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Hortaliças"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Assinatura": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "cliente": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "plano": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "data_assinatura": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "data_renovacao": {
+            "type": "string",
+            "format": "date",
+            "readOnly": true
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "data_cancelamento": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "nullable": true
+          },
+          "valor_contratado": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,18}(?:\\.\\d{0,2})?$",
+            "readOnly": true
+          },
+          "programacoes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EntregaProgramada"
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "cliente",
+          "data_assinatura",
+          "data_cancelamento",
+          "data_renovacao",
+          "id",
+          "plano",
+          "programacoes",
+          "status",
+          "valor_contratado"
+        ]
+      },
+      "CadastroClienteInput": {
+        "type": "object",
+        "description": "Campos comuns a cliente e produtor (RF001).",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "password_confirm": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "endereco": {
+            "$ref": "#/components/schemas/EnderecoInput"
+          },
+          "cpf": {
+            "type": "string",
+            "maxLength": 14
+          }
+        },
+        "required": [
+          "cpf",
+          "email",
+          "endereco",
+          "nome",
+          "password",
+          "password_confirm"
+        ]
+      },
+      "CadastroProdutorInput": {
+        "type": "object",
+        "description": "Campos comuns a cliente e produtor (RF001).",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "password_confirm": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "endereco": {
+            "$ref": "#/components/schemas/EnderecoInput"
+          },
+          "cnpj": {
+            "type": "string",
+            "maxLength": 18
+          }
+        },
+        "required": [
+          "cnpj",
+          "email",
+          "endereco",
+          "nome",
+          "password",
+          "password_confirm"
+        ]
+      },
+      "CategoryEnum": {
+        "enum": [
+          "hortalica",
+          "fruta",
+          "legume",
+          "outro"
+        ],
+        "type": "string",
+        "description": "* `hortalica` - Hortaliça\n* `fruta` - Fruta\n* `legume` - Legume\n* `outro` - Outro"
+      },
+      "Cesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "plano": {
+            "type": "integer"
+          },
+          "nome": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HortalicaCesta"
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "itens",
+          "nome",
+          "plano"
+        ]
+      },
+      "CestaCatalogo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "nome": {
+            "type": "string",
+            "readOnly": true
+          },
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemCatalogo"
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "itens",
+          "nome"
+        ]
+      },
+      "ContratarAssinaturaInput": {
+        "type": "object",
+        "properties": {
+          "plano": {
+            "type": "integer"
+          },
+          "programacoes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EntregaProgramadaInput"
+            }
+          }
+        },
+        "required": [
+          "plano",
+          "programacoes"
+        ]
+      },
+      "DiaSemanaEnum": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "type": "integer",
+        "description": "* `1` - Segunda-feira\n* `2` - Terça-feira\n* `3` - Quarta-feira\n* `4` - Quinta-feira\n* `5` - Sexta-feira\n* `6` - Sábado\n* `7` - Domingo"
+      },
+      "Endereco": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "rua": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "bairro": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "cidade": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "estado": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2
+          }
+        },
+        "required": [
+          "bairro",
+          "cidade",
+          "estado",
+          "id",
+          "rua"
+        ]
+      },
+      "EnderecoInput": {
+        "type": "object",
+        "properties": {
+          "rua": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "bairro": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "cidade": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "estado": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2
+          }
+        },
+        "required": [
+          "bairro",
+          "cidade",
+          "estado",
+          "rua"
+        ]
+      },
+      "EntregaProgramada": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "assinatura": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "cesta": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "dia_semana": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiaSemanaEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "ordem": {
+            "type": "integer",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "assinatura",
+          "cesta",
+          "dia_semana",
+          "id",
+          "ordem"
+        ]
+      },
+      "EntregaProgramadaInput": {
+        "type": "object",
+        "properties": {
+          "cesta": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dia_semana": {
+            "$ref": "#/components/schemas/DiaSemanaEnum"
+          }
+        },
+        "required": [
+          "cesta",
+          "dia_semana"
+        ]
+      },
+      "EntregaProgramadaList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "assinatura": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "cesta": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "dia_semana": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiaSemanaEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "ordem": {
+            "type": "integer",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "assinatura",
+          "cesta",
+          "dia_semana",
+          "id",
+          "ordem"
+        ]
+      },
+      "HortalicaCesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "cesta": {
+            "type": "integer"
+          },
+          "hortalica": {
+            "type": "integer"
+          },
+          "quantidade": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,7}(?:\\.\\d{0,3})?$"
+          }
+        },
+        "required": [
+          "cesta",
+          "hortalica",
+          "id",
+          "quantidade"
+        ]
+      },
+      "ItemCatalogo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "hortalica": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Product"
+              }
+            ],
+            "readOnly": true
+          },
+          "quantidade": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,7}(?:\\.\\d{0,3})?$",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "hortalica",
+          "id",
+          "quantidade"
+        ]
+      },
+      "Login": {
+        "type": "object",
+        "description": "Login por e-mail + senha. Acrescenta nome/perfis ao token e o usuário à resposta,\npara o app adaptar a interface a Cliente ou Produtor (RF002).",
+        "properties": {
+          "email": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "access": {
+            "type": "string",
+            "readOnly": true
+          },
+          "refresh": {
+            "type": "string",
+            "readOnly": true
+          },
+          "usuario": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Usuario"
+              }
+            ],
+            "readOnly": true
+          }
+        },
+        "required": [
+          "access",
+          "refresh",
+          "usuario"
+        ]
+      },
+      "PaginatedAssinaturaList": {
+        "type": "object",
+        "required": [
+          "count",
+          "results"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Assinatura"
+            }
+          }
+        }
+      },
+      "PaginatedCestaList": {
+        "type": "object",
+        "required": [
+          "count",
+          "results"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Cesta"
+            }
+          }
+        }
+      },
+      "PaginatedEnderecoList": {
+        "type": "object",
+        "required": [
+          "count",
+          "results"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Endereco"
+            }
+          }
+        }
+      },
+      "PaginatedEntregaProgramadaListList": {
+        "type": "object",
+        "required": [
+          "count",
+          "results"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EntregaProgramadaList"
+            }
+          }
+        }
+      },
+      "PaginatedHortalicaCestaList": {
+        "type": "object",
+        "required": [
+          "count",
+          "results"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HortalicaCesta"
+            }
+          }
+        }
+      },
+      "PaginatedPlanoCatalogoList": {
+        "type": "object",
+        "required": [
+          "count",
+          "results"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanoCatalogo"
+            }
+          }
+        }
+      },
+      "PaginatedPlanoList": {
+        "type": "object",
+        "required": [
+          "count",
+          "results"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Plano"
+            }
+          }
+        }
+      },
+      "PaginatedProductList": {
+        "type": "object",
+        "required": [
+          "count",
+          "results"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          }
+        }
+      },
+      "PatchedCesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "plano": {
+            "type": "integer"
+          },
+          "nome": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HortalicaCesta"
+            },
+            "readOnly": true
+          }
+        }
+      },
+      "PatchedEndereco": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "rua": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "bairro": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "cidade": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "estado": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2
+          }
+        }
+      },
+      "PatchedHortalicaCesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "cesta": {
+            "type": "integer"
+          },
+          "hortalica": {
+            "type": "integer"
+          },
+          "quantidade": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,7}(?:\\.\\d{0,3})?$"
+          }
+        }
+      },
+      "PatchedPlano": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "produtor": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "nome": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "categoria": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "periodicidade_semanal": {
+            "type": "integer",
+            "maximum": 9223372036854775807,
+            "minimum": 1,
+            "format": "int64"
+          },
+          "is_ativo": {
+            "type": "boolean",
+            "title": "Ativo"
+          }
+        }
+      },
+      "PatchedProduct": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "produtor": {
+            "type": "integer",
+            "readOnly": true,
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/components/schemas/CategoryEnum"
+          },
+          "price": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,8}(?:\\.\\d{0,2})?$"
+          },
+          "stock": {
+            "type": "integer",
+            "maximum": 9223372036854775807,
+            "minimum": 0,
+            "format": "int64"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/UnitEnum"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        }
+      },
+      "Plano": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "produtor": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "nome": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "categoria": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "periodicidade_semanal": {
+            "type": "integer",
+            "maximum": 9223372036854775807,
+            "minimum": 1,
+            "format": "int64"
+          },
+          "is_ativo": {
+            "type": "boolean",
+            "title": "Ativo"
+          }
+        },
+        "required": [
+          "categoria",
+          "id",
+          "nome",
+          "periodicidade_semanal",
+          "produtor"
+        ]
+      },
+      "PlanoCatalogo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "produtor": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "nome": {
+            "type": "string",
+            "readOnly": true
+          },
+          "categoria": {
+            "type": "string",
+            "readOnly": true
+          },
+          "periodicidade_semanal": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "valor": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,18}(?:\\.\\d{0,2})?$",
+            "readOnly": true
+          },
+          "cestas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CestaCatalogo"
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "categoria",
+          "cestas",
+          "id",
+          "nome",
+          "periodicidade_semanal",
+          "produtor",
+          "valor"
+        ]
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "produtor": {
+            "type": "integer",
+            "readOnly": true,
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/components/schemas/CategoryEnum"
+          },
+          "price": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,8}(?:\\.\\d{0,2})?$"
+          },
+          "stock": {
+            "type": "integer",
+            "maximum": 9223372036854775807,
+            "minimum": 0,
+            "format": "int64"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/UnitEnum"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "category",
+          "created_at",
+          "id",
+          "name",
+          "price",
+          "produtor",
+          "unit",
+          "updated_at"
+        ]
+      },
+      "RedefinirSenhaInput": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "token": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "password_confirm": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "password",
+          "password_confirm",
+          "token",
+          "uid"
+        ]
+      },
+      "Refresh": {
+        "type": "object",
+        "properties": {
+          "refresh": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "access",
+          "refresh"
+        ]
+      },
+      "SolicitarSenhaInput": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "StatusEnum": {
+        "enum": [
+          "ativa",
+          "cancelada"
+        ],
+        "type": "string",
+        "description": "* `ativa` - Ativa\n* `cancelada` - Cancelada"
+      },
+      "TokenPair": {
+        "type": "object",
+        "properties": {
+          "access": {
+            "type": "string",
+            "readOnly": true
+          },
+          "refresh": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "access",
+          "refresh"
+        ]
+      },
+      "UnitEnum": {
+        "enum": [
+          "unidade",
+          "kg",
+          "g",
+          "l",
+          "maco"
+        ],
+        "type": "string",
+        "description": "* `unidade` - Unidade\n* `kg` - Quilograma\n* `g` - Grama\n* `l` - Litro\n* `maco` - Maço"
+      },
+      "Usuario": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "nome": {
+            "type": "string",
+            "readOnly": true
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "readOnly": true,
+            "title": "E-mail"
+          },
+          "perfis": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "email",
+          "id",
+          "nome",
+          "perfis"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sessionid"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Autenticação",
+      "description": "Cadastro, login, renovação e perfil."
+    },
+    {
+      "name": "Endereços",
+      "description": "Endereços do usuário autenticado."
+    },
+    {
+      "name": "Hortaliças",
+      "description": "Catálogo gerenciado pelo produtor."
+    },
+    {
+      "name": "Planos",
+      "description": "Planos e ofertas disponíveis."
+    },
+    {
+      "name": "Cestas",
+      "description": "Cestas e sua composição."
+    },
+    {
+      "name": "Assinaturas",
+      "description": "Contratação e cancelamento."
+    },
+    {
+      "name": "Entregas programadas",
+      "description": "Dias escolhidos para cada cesta."
+    },
+    {
+      "name": "Sistema",
+      "description": "Disponibilidade da API."
+    }
+  ]
+}
