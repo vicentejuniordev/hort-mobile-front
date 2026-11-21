@@ -73,6 +73,6 @@ Lint, typecheck, compilação das fixtures, verificação dos tipos gerados e 20
 - [ ] API de homologação HTTPS acessível pelo Android.
 - [ ] Dados fictícios disponíveis no ambiente de homologação.
 - [ ] Teste real de acesso e leitura autenticada no novo ambiente.
-- [ ] Revisão do PR e aceite do responsável.
+- [x] Revisão e integração do PR #4 pelo responsável (21/11/2026); pendências de ambiente preservadas.
 
-A MOB-03 não está encerrada. A infraestrutura e a implementação backend pendentes não devem ser simuladas no frontend. O pacote preparado permite revisar a integração e continuar assim que o ambiente estiver definido, mantendo a próxima task aguardando o aceite.
+A MOB-03 não está encerrada. A infraestrutura e a implementação backend pendentes não devem ser simuladas no frontend. Após a integração do contrato e a supervisão do cadastro antecipado, o responsável autorizou continuar a MOB-04 mantendo essas pendências explícitas.
