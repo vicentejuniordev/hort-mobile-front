@@ -1,6 +1,6 @@
 # MOB-04 — Base Android, EAS, CI e navegação do produtor
 
-Atualização: 21/11/2026. Status: configuração e navegação preparadas; APK EAS e aceite em aparelho ainda pendentes de conta/login Expo.
+Atualização: 21/11/2026. Status: projeto EAS vinculado, CI aprovado e APK gerado; instalação e aceite no Android aguardando supervisão.
 
 ## Contexto e escopo
 
@@ -24,15 +24,15 @@ Referências consultadas pela skill `figma:figma-design-to-code`: [inicial do pr
 
 ## Builds
 
-`expo-dev-client` instalado por `npx expo install`, na versão compatível com SDK 58. Nenhum diretório nativo foi criado/editado.
+`expo-dev-client` instalado por `npx expo install`, na versão compatível com SDK 58. Nenhum diretório nativo foi criado/editado manualmente no repositório.
 
-| Perfil EAS | Resultado | Ambiente |
-| --- | --- | --- |
+| Perfil EAS  | Resultado                                                      | Ambiente    |
+| ----------- | -------------------------------------------------------------- | ----------- |
 | development | APK com ferramentas de desenvolvimento, para conectar ao Metro | development |
-| preview | APK interno sem Metro | preview |
-| production | AAB para futura distribuição | production |
+| preview     | APK interno sem Metro                                          | preview     |
+| production  | APK interno final                                              | production  |
 
-Identificador Android preparado: `com.hort.mobile`, `versionCode: 1`; confirmar a titularidade/identificador antes de qualquer submissão à loja. Não há owner/projectId inventado no app: serão gravados ao vincular o projeto real. Versões nativas ficam locais. Nenhum envio às lojas ou atualização OTA foi configurado/disparado.
+Identificador Android preparado: `com.hort.mobile`, `versionCode: 1`; identificador da distribuição interna por APK. Projeto real [@vicentedev/hort-app](https://expo.dev/accounts/vicentedev/projects/hort-app), ID `24af1435-fcb8-4131-a7c0-f74efa5fd51e`, vinculado em `app.json` com owner `vicentedev`. Versões nativas ficam locais. Por decisão do responsável, não haverá publicação na Play Store: a distribuição Android será por APK. Nenhum envio às lojas ou atualização OTA foi configurado/disparado.
 
 `.easignore` mantém os ignores do projeto e exclui arquivos `.env` locais do upload. Configure `EXPO_PUBLIC_API_URL` no ambiente EAS correspondente quando for gerar preview/produção; só a URL pública, sem credenciais. O hook `eas-build-post-install` impede esses dois perfis sem URL HTTPS válida. Development conecta ao Metro, que lê a URL de desenvolvimento em `.env.local` no computador; celular e API ainda precisam se alcançar na rede. `127.0.0.1` no celular aponta para o próprio celular.
 
@@ -56,7 +56,9 @@ npm run start:dev -- --clear
 4. Gerar APK com `npx eas-cli@latest build --platform android --profile development`. Se houver perguntas de credenciais, responder no terminal local para usar a assinatura gerenciada pelo Expo.
 5. Instalar pelo link real da build, iniciar o Metro com `npm run start:dev` e validar no Android.
 
-Nesta execução, `npx eas-cli@latest whoami` respondeu `Not logged in`. Nenhum projeto externo, chave ou build foi criado. O responsável pediu orientação para criar a conta e recebeu os passos acima; a vinculação continua pendente.
+Projeto real criado por `npx eas-cli@latest init --account vicentedev --non-interactive`. A [build de desenvolvimento](https://expo.dev/accounts/vicentedev/projects/hort-app/builds/1ca9f7dd-4aa2-47cd-9209-5d4d20f0a7d5) terminou com status `FINISHED` em 21/11/2026 às 11:23 UTC. O EAS gerou a chave Android e assinou o APK. Fonte: commit `06efbe6`, usando worktree temporário limpo, sem a alteração local de `tsconfig.json`, com `--platform android --profile development --non-interactive --no-wait`.
+
+[Baixar APK de desenvolvimento](https://expo.dev/artifacts/eas/7gDKlUWJZfecPvs7RqlaJ-KJ_eFYmaY5f7KweIxOjnU.apk). Ele conecta ao Metro pelo comando `npm run start:dev -- --clear`. O perfil final de produção também gera APK interno, conforme decisão do responsável; não foi gerada uma build de produção sem a API HTTPS.
 
 ## CI e processo de validação
 
@@ -68,17 +70,17 @@ Roteiro de supervisão Android: entrar como produtor, conferir nome e abas, abri
 
 ## Inventário de distribuição e aceite
 
-| Item | Situação |
-| --- | --- |
-| Conta Expo e projeto EAS real | Aguardando criação/login do responsável |
-| Chave Android | Não criada; será gerenciada no primeiro build |
-| APK de desenvolvimento instalado | Pendente |
-| Google Play Console/titularidade | Não informado; não necessário para o teste por APK interno |
-| Apple Developer/App Store Connect | Não informado; fora da validação atual por decisão do responsável |
-| API de homologação HTTPS | Pendente na MOB-03 |
-| Execução Maestro/E2E nativa | Ainda não configurada; supervisão manual Android nesta entrega |
-| CI remoto e revisão do PR | A verificar no PR desta entrega |
+| Item                              | Situação                                                                                                                                                    |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Conta Expo e projeto EAS real     | `vicentedev/hort-app`, criado e vinculado                                                                                                                   |
+| Chave Android                     | Criada e gerenciada pelo Expo; APK assinado                                                                                                                 |
+| APK de desenvolvimento instalado  | APK gerado; instalação e supervisão física pendentes                                                                                                        |
+| Google Play Console/titularidade  | Fora do escopo: responsável decidiu não publicar na Play Store                                                                                              |
+| Apple Developer/App Store Connect | Não informado; fora da validação atual por decisão do responsável                                                                                           |
+| API de homologação HTTPS          | Pendente na MOB-03                                                                                                                                          |
+| Execução Maestro/E2E nativa       | Ainda não configurada; supervisão manual Android nesta entrega                                                                                              |
+| CI remoto e revisão do PR         | Primeira execução aprovada: [Android CI](https://github.com/vicentejuniordev/hort-mobile-front/actions/runs/44897304627). Revisão/aceite pendentes no PR #6 |
 
-A MOB-04 não está concluída enquanto faltar a build instalável e a supervisão Android. O próximo pacote de desenvolvimento continua sendo a MOB-05 após esse aceite, considerando que o cadastro foi antecipado por solicitação do responsável.
+A build instalável está disponível; a MOB-04 aguarda instalação, supervisão Android e aceite do responsável. O próximo pacote de desenvolvimento continua sendo a MOB-05 após esse aceite, considerando que o cadastro foi antecipado por solicitação do responsável.
 
 Fontes técnicas: [configuração EAS](https://docs.expo.dev/build/eas-json/), [primeira build](https://docs.expo.dev/build/setup/), [development builds](https://docs.expo.dev/develop/development-builds/introduction/), [variáveis EAS](https://docs.expo.dev/eas/environment-variables/usage/) e [Router settings no SDK atual](https://docs.expo.dev/router/advanced/router-settings/).
