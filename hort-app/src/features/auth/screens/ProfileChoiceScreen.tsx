@@ -1,15 +1,12 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/Button';
-import { NoticeDialog } from '@/shared/ui/NoticeDialog';
 import { PublicScreen } from '@/shared/ui/PublicScreen';
 import { authAssets } from '../components/assets';
 import { BackButton } from '../components/BackButton';
 export default function ProfileChoiceScreen() {
-  const [profile, setProfile] = useState<'cliente' | 'produtor' | null>(null);
   return (
     <PublicScreen backgroundColor={theme.colors.profileBackground}>
       <View style={styles.header}>
@@ -41,7 +38,12 @@ export default function ProfileChoiceScreen() {
           <Button
             compact
             label="Sou Cliente"
-            onPress={() => setProfile('cliente')}
+            onPress={() =>
+              router.push({
+                pathname: '/(public)/cadastro',
+                params: { perfil: 'cliente' },
+              })
+            }
             style={[styles.choiceButton, { marginTop: 34 }]}
           />
           <Image
@@ -66,7 +68,12 @@ export default function ProfileChoiceScreen() {
           <Button
             compact
             label="Sou Produtor"
-            onPress={() => setProfile('produtor')}
+            onPress={() =>
+              router.push({
+                pathname: '/(public)/cadastro',
+                params: { perfil: 'produtor' },
+              })
+            }
             style={[styles.choiceButton, { marginTop: 10 }]}
           />
         </View>
@@ -105,19 +112,6 @@ export default function ProfileChoiceScreen() {
         />
         <Image source={authAssets.courier} style={styles.courier} />
       </View>
-      <NoticeDialog
-        visible={profile !== null}
-        title={`Cadastro de ${profile ?? ''}`}
-        message="O cadastro pelo aplicativo estará disponível em breve. Se você já tem uma conta, pode entrar com seu e-mail e senha."
-        onClose={() => setProfile(null)}
-        action={{
-          label: 'Já tenho conta',
-          onPress: () => {
-            setProfile(null);
-            router.navigate('/(public)/login');
-          },
-        }}
-      />
     </PublicScreen>
   );
 }
