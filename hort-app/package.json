@@ -5,6 +5,7 @@
   "dependencies": {
     "@expo-google-fonts/istok-web": "^0.4.1",
     "@expo-google-fonts/poppins": "^0.4.1",
+    "@hookform/resolvers": "^7.0.8",
     "expo": "~58.0.26",
     "expo-constants": "~58.0.16",
     "expo-font": "~58.0.12",
@@ -14,10 +15,12 @@
     "expo-status-bar": "~58.0.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-hook-form": "^7.92.0",
     "react-native": "0.88.1",
     "react-native-safe-area-context": "~5.11.1",
     "react-native-screens": "~4.30.1",
-    "react-native-web": "^0.21.4"
+    "react-native-web": "^0.21.4",
+    "zod": "^4.6.7"
   },
   "scripts": {
     "start": "expo start",
@@ -26,7 +29,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types tests/http.test.mts && node --experimental-strip-types tests/contract.test.mts",
+    "test": "node --experimental-strip-types tests/http.test.mts && node --experimental-strip-types tests/contract.test.mts && node --experimental-strip-types tests/registration.test.mts",
     "format:check": "prettier --check src tests app.json package.json tsconfig.json eslint.config.js",
     "contracts:generate": "node scripts/api-contract.mjs generate",
     "contracts:check": "node scripts/api-contract.mjs check && tsc --project tsconfig.contracts.json --noEmit",
