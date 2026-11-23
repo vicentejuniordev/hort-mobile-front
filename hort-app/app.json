@@ -15,12 +15,31 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.hort.mobile",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-router", "expo-status-bar", "expo-font", "expo-image"],
-    "scheme": "hort"
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-font",
+      "expo-image",
+      "expo-dev-client"
+    ],
+    "scheme": "hort",
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "24af1435-fcb8-4131-a7c0-f74efa5fd51e"
+      }
+    },
+    "owner": "vicentedev"
   }
 }

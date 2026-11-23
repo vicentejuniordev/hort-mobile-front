@@ -1,4 +1,1 @@
-import TechnicalAccountScreen from '@/features/account/screens/TechnicalAccountScreen';
-export default function Resumo() {
-  return <TechnicalAccountScreen mode="produtor" />;
-}
+export { default } from '@/features/producer/screens/ProducerSummaryScreen';
