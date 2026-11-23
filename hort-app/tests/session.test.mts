@@ -562,3 +562,31 @@ test('login não começa enquanto a revogação da conta anterior está em andam
   release.resolve();
   await logout;
 });
+
+test('nova tentativa de limpeza não espera um bootstrap antigo que ignorou cancelamento', async () => {
+  const h = harness();
+  await h.login();
+  const entered = deferred();
+  const release = deferred();
+  h.handle(async (path, options) => {
+    if (path === 'auth/me/') {
+      entered.resolve();
+      await release.promise;
+      return user;
+    }
+    return h.fallback(path, options);
+  });
+  const restored = new SessionManager(h.transport, h.storage, identity);
+  const oldBoot = restored.bootstrap();
+  await entered.promise;
+  h.disk.failClear = true;
+  await assert.rejects(restored.signOut());
+  h.disk.failClear = false;
+  const retry = restored.bootstrap();
+  await setImmediate();
+  assert.equal(restored.getSnapshot().status, 'anonymous');
+  release.resolve();
+  await Promise.all([oldBoot, retry]);
+  assert.equal(restored.getSnapshot().session, null);
+  assert.equal(h.disk.value, null);
+});

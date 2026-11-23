@@ -121,6 +121,7 @@ export class SessionManager {
     ++this.epoch;
     this.controllers.forEach((controller) => controller.abort());
     this.controllers.clear();
+    this.bootstrapFlight = null;
     this.refreshFlight = null;
     return this.epoch;
   }
