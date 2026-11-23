@@ -1,5 +1,6 @@
 import { Button, Text } from 'react-native';
 import { router } from 'expo-router';
+import { SignOutButton } from '@/features/auth/components/SignOutButton';
 import { useSession } from '@/shared/session/SessionProvider';
 import { Screen, styles } from '@/shared/ui/Screen';
 export default function TechnicalAccountScreen({
@@ -7,7 +8,7 @@ export default function TechnicalAccountScreen({
 }: {
   mode?: 'cliente' | 'produtor';
 }) {
-  const { session, clearLocalSession } = useSession();
+  const { session } = useSession();
   return (
     <Screen>
       <Text style={styles.title}>
@@ -39,15 +40,7 @@ export default function TechnicalAccountScreen({
           onPress={() => router.replace('/(cliente)/catalogo')}
         />
       )}
-      <Text style={styles.text}>
-        Encerrar este teste limpa apenas a sessão deste aparelho. Não revoga
-        sessões no servidor.
-      </Text>
-      <Button
-        title="Encerrar teste local"
-        color="#28643A"
-        onPress={clearLocalSession}
-      />
+      <SignOutButton />
     </Screen>
   );
 }
