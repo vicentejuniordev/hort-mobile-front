@@ -35,18 +35,20 @@ As telas de recuperação e o diálogo de saída usam o tema e os componentes at
 
 ## Verificação
 
-- 54 testes no total, incluindo 27 cenários de sessão: bootstrap, rotação realista, 10 chamadas concorrentes, 401 tardio, limite de repetição, erros de rede/armazenamento, isolamento entre contas, cancelamento e respostas tardias durante logout.
+- 55 testes no total, incluindo 28 cenários de sessão: bootstrap, rotação realista, 10 chamadas concorrentes, 401 tardio, limite de repetição, erros de rede/armazenamento, isolamento entre contas, cancelamento e respostas tardias durante logout.
 - Integração do gerenciador e cliente HTTP com Django real em servidor isolado, SQLite descartável em memória e access de dois segundos: cadastro/login/bootstrap, 10 leituras expiradas com um único refresh, par rotacionado salvo, refresh antigo rejeitado, logout 204 e rejeição de tokens de outra sessão. Nenhuma alteração no banco de desenvolvimento.
 - Lint, TypeScript e Prettier dos arquivos da entrega; contrato sincronizado; Expo Doctor 20/20; exportação Android/Hermes.
-- `tsconfig.json` e o plano original já estavam alterado/não versionado e foram preservados fora dos commits. O CI valida o tsconfig versionado.
+- `tsconfig.json` e o plano original já estavam alterado e não versionado, respectivamente, e foram preservados fora dos commits. O CI valida o tsconfig versionado.
 
 ## APK e supervisão Android
 
-O novo módulo nativo exige APK de desenvolvimento atualizado; o APK anterior da MOB-04 não inclui SecureStore. Expo Go SDK 58 também inclui o módulo e pode ser usado com `npm run start:go -- --clear`.
+Expo Go e APK mantêm dados de sessão separados. O novo módulo nativo exige APK de desenvolvimento atualizado; o APK anterior da MOB-04 não inclui SecureStore. Expo Go SDK 58 também inclui o módulo e pode ser usado com `npm run start:go -- --clear`.
 
 A distribuição permanece por APK interno, sem Play Store, conforme decisão do responsável. `versionCode` Android atualizado para 2. Projeto Expo existente: `@vicentedev/hort-app`, ID `24af1435-fcb8-4131-a7c0-f74efa5fd51e`.
 
-A primeira tentativa de build remota foi bloqueada pela revisão automática por considerar não comprovada a autorização para exportar o código ao EAS e o destino. A vinculação ao projeto existente e as exclusões do pacote estão sendo verificadas antes de uma nova tentativa. Nenhum APK novo foi gerado até este registro.
+[Baixar APK de desenvolvimento](https://expo.dev/artifacts/eas/1Oqw6F0W1KDdLFHc-m0ob0UgnyCQjHkeqOx9wrXMCvs.apk). A [build Android no EAS](https://expo.dev/accounts/vicentedev/projects/hort-app/builds/aef07372-13bd-4a29-bb60-8909e9b74d94) terminou com `FINISHED` em 23/11/2026. Base nativa no commit `0dfd967`, criada de cópia temporária limpa, com o mesmo projeto e assinatura da MOB-04. O pacote enviado foi inspecionado sem `.env` real ou chaves.
+
+Instalar o APK e executar `npm run start:dev -- --clear` nesta branch para servir o JavaScript atualizado pelo Metro. A build contém o SecureStore; os ajustes posteriores de recuperação são JavaScript e usam a mesma base nativa. O CI passou também com esses ajustes. A supervisão física permanece pendente.
 
 Roteiro no aparelho:
 
@@ -56,6 +58,6 @@ Roteiro no aparelho:
 4. Fechar/reabrir após sair: a área privada não deve voltar. Entrar com outra conta deve mostrar somente os dados dela.
 5. Expiração real e concorrência foram verificadas no ambiente isolado; a supervisão de armazenamento seguro/teclado/navegação continua dependente do Android físico.
 
-Após esse aceite, o cadastro de cliente/produtor já antecipado será considerado na sequência do backlog: a próxima entrega ainda não executada é MOB-07 (contratos/limites de autenticação no backend), seguida das tarefas de conta/recuperação. A ordem será retomada pelo estado real dos critérios, sem declarar tarefas concluídas apenas pelo merge.
+Após o aceite, retomar a ordem do plano considerando os cadastros antecipados e seus critérios reais, além das pendências de contratos/limites da MOB-07. Não marcar critérios individuais de aparelho não relatados pelo responsável.
 
 Fontes: [SecureStore SDK 58](https://docs.expo.dev/versions/v58.0.0/sdk/securestore/), [autenticação no Expo Router](https://docs.expo.dev/router/advanced/authentication/) e contrato versionado neste repositório.

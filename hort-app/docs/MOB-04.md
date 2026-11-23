@@ -1,6 +1,6 @@
 # MOB-04 — Base Android, EAS, CI e navegação do produtor
 
-Atualização: 21/11/2026. Status: projeto EAS vinculado, CI aprovado e APK gerado; instalação e aceite no Android aguardando supervisão.
+Atualização: 21/11/2026. Status: PR #6 integrado pelo responsável em 23/11/2026; continuidade da MOB-05 autorizada. Projeto EAS vinculado, CI aprovado e APK gerado. Os casos individuais de aparelho não relatados não são marcados como executados.
 
 ## Contexto e escopo
 
@@ -70,17 +70,17 @@ Roteiro de supervisão Android: entrar como produtor, conferir nome e abas, abri
 
 ## Inventário de distribuição e aceite
 
-| Item                              | Situação                                                                                                                                                    |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Conta Expo e projeto EAS real     | `vicentedev/hort-app`, criado e vinculado                                                                                                                   |
-| Chave Android                     | Criada e gerenciada pelo Expo; APK assinado                                                                                                                 |
-| APK de desenvolvimento instalado  | APK gerado; instalação e supervisão física pendentes                                                                                                        |
-| Google Play Console/titularidade  | Fora do escopo: responsável decidiu não publicar na Play Store                                                                                              |
-| Apple Developer/App Store Connect | Não informado; fora da validação atual por decisão do responsável                                                                                           |
-| API de homologação HTTPS          | Pendente na MOB-03                                                                                                                                          |
-| Execução Maestro/E2E nativa       | Ainda não configurada; supervisão manual Android nesta entrega                                                                                              |
-| CI remoto e revisão do PR         | Primeira execução aprovada: [Android CI](https://github.com/vicentejuniordev/hort-mobile-front/actions/runs/44897304627). Revisão/aceite pendentes no PR #6 |
+| Item                              | Situação                                                                                                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Conta Expo e projeto EAS real     | `vicentedev/hort-app`, criado e vinculado                                                                                                                                |
+| Chave Android                     | Criada e gerenciada pelo Expo; APK assinado                                                                                                                              |
+| APK de desenvolvimento instalado  | APK gerado; instalação e supervisão física pendentes                                                                                                                     |
+| Google Play Console/titularidade  | Fora do escopo: responsável decidiu não publicar na Play Store                                                                                                           |
+| Apple Developer/App Store Connect | Não informado; fora da validação atual por decisão do responsável                                                                                                        |
+| API de homologação HTTPS          | Pendente na MOB-03                                                                                                                                                       |
+| Execução Maestro/E2E nativa       | Ainda não configurada; supervisão manual Android nesta entrega                                                                                                           |
+| CI remoto e revisão do PR         | Primeira execução aprovada: [Android CI](https://github.com/vicentejuniordev/hort-mobile-front/actions/runs/44897304627). PR #6 integrado pelo responsável em 23/11/2026 |
 
-A build instalável está disponível; a MOB-04 aguarda instalação, supervisão Android e aceite do responsável. O próximo pacote de desenvolvimento continua sendo a MOB-05 após esse aceite, considerando que o cadastro foi antecipado por solicitação do responsável.
+Em 23/11/2026, o responsável confirmou o merge do PR #6 e autorizou a continuidade. A MOB-05 segue com o cadastro já antecipado considerado no backlog; nenhum caso individual de aparelho não relatado foi marcado como executado.
 
 Fontes técnicas: [configuração EAS](https://docs.expo.dev/build/eas-json/), [primeira build](https://docs.expo.dev/build/setup/), [development builds](https://docs.expo.dev/develop/development-builds/introduction/), [variáveis EAS](https://docs.expo.dev/eas/environment-variables/usage/) e [Router settings no SDK atual](https://docs.expo.dev/router/advanced/router-settings/).
