@@ -7,6 +7,7 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   action?: { label: string; onPress: () => void };
+  closeLabel?: string;
 };
 export function NoticeDialog({
   title,
@@ -14,6 +15,7 @@ export function NoticeDialog({
   visible,
   onClose,
   action,
+  closeLabel = 'Entendi',
 }: Props) {
   return (
     <Modal
@@ -29,7 +31,7 @@ export function NoticeDialog({
           </Text>
           <Text style={styles.message}>{message}</Text>
           {action && <Button label={action.label} onPress={action.onPress} />}
-          <Button label="Entendi" onPress={onClose} />
+          <Button label={closeLabel} onPress={onClose} />
         </View>
       </View>
     </Modal>

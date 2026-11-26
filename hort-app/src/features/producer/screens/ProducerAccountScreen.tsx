@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
+import { SignOutButton } from '@/features/auth/components/SignOutButton';
 import { useSession } from '@/shared/session/SessionProvider';
 import { Button } from '@/shared/ui/Button';
 import {
@@ -8,7 +9,7 @@ import {
 } from '../components/ProducerScreen';
 
 export default function ProducerAccountScreen() {
-  const { session, clearLocalSession } = useSession();
+  const { session } = useSession();
   return (
     <ProducerScreen title="Sua conta">
       <View style={styles.card}>
@@ -24,14 +25,7 @@ export default function ProducerAccountScreen() {
           onPress={() => router.replace('/(cliente)/catalogo')}
         />
       )}
-      <Text style={styles.text}>
-        Encerrar este acesso limpa a sessão apenas deste aparelho. As outras
-        sessões continuam ativas.
-      </Text>
-      <Button
-        label="Encerrar acesso neste aparelho"
-        onPress={clearLocalSession}
-      />
+      <SignOutButton />
     </ProducerScreen>
   );
 }

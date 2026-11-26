@@ -1,38 +1,45 @@
 import {
   createContext,
   useContext,
-  useRef,
-  useState,
+  useEffect,
+  useSyncExternalStore,
   type PropsWithChildren,
 } from 'react';
-import { technicalLogin, type User } from '@/features/auth/api';
-type Session = { access: string; user: User };
-type SessionContext = {
-  session: Session | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  clearLocalSession: () => void;
+import type { SessionState } from './manager';
+import { sessionManager } from './runtime';
+
+type SessionContext = SessionState & {
+  signIn: typeof sessionManager.signIn;
+  signOut: typeof sessionManager.signOut;
+  retry: typeof sessionManager.bootstrap;
+  dismissNotice: typeof sessionManager.dismissNotice;
 };
 const Context = createContext<SessionContext | null>(null);
 export function SessionProvider({ children }: PropsWithChildren) {
-  const [session, setSession] = useState<Session | null>(null);
-  const generation = useRef(0);
-  async function signIn(email: string, password: string) {
-    const current = ++generation.current;
-    const next = await technicalLogin(email, password);
-    if (current === generation.current) setSession(next);
-  }
-  function clearLocalSession() {
-    generation.current++;
-    setSession(null);
-  }
+  const state = useSyncExternalStore(
+    sessionManager.subscribe,
+    sessionManager.getSnapshot,
+    sessionManager.getSnapshot,
+  );
+  useEffect(() => {
+    void sessionManager.bootstrap();
+  }, []);
   return (
-    <Context.Provider value={{ session, signIn, clearLocalSession }}>
+    <Context.Provider
+      value={{
+        ...state,
+        signIn: sessionManager.signIn,
+        signOut: sessionManager.signOut,
+        retry: sessionManager.bootstrap,
+        dismissNotice: sessionManager.dismissNotice,
+      }}
+    >
       {children}
     </Context.Provider>
   );
 }
 export function useSession() {
-  const value = useContext(Context);
-  if (!value) throw new Error('SessionProvider ausente.');
-  return value;
+  const context = useContext(Context);
+  if (!context) throw new Error('SessionProvider ausente.');
+  return context;
 }
