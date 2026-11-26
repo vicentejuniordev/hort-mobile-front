@@ -19,6 +19,10 @@ export default function TechnicalAccountScreen({
             : 'Conta'}
       </Text>
       <Text style={styles.text}>Olá, {session?.user.nome}.</Text>
+      <Button
+        title="Minha conta e endereços"
+        onPress={() => router.push('/conta')}
+      />
       <Text style={styles.text}>
         Sua conta foi consultada na API. Esta é a base de navegação; as telas
         serão implementadas nas próximas tarefas.

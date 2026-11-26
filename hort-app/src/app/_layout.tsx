@@ -29,6 +29,7 @@ function Navigation() {
           </Stack.Protected>
           <Stack.Protected guard={!!session}>
             <Stack.Screen name="conta" />
+            <Stack.Screen name="enderecos" />
           </Stack.Protected>
         </Stack>
       )}

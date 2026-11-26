@@ -1,1 +1,1 @@
-export { default } from '@/features/account/screens/TechnicalAccountScreen';
+export { default } from '@/features/account/screens/AccountScreen';

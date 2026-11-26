@@ -19,6 +19,10 @@ export default function ProducerAccountScreen() {
         </Text>
         <Text style={styles.text}>Perfil de produtor</Text>
       </View>
+      <Button
+        label="Meus endereços"
+        onPress={() => router.push('/enderecos')}
+      />
       {session?.user.perfis.includes('cliente') && (
         <Button
           label="Abrir área do cliente"
