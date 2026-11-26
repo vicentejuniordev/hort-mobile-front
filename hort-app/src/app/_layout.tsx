@@ -21,10 +21,20 @@ function Navigation() {
           <Stack.Protected guard={!session}>
             <Stack.Screen name="(public)" />
           </Stack.Protected>
-          <Stack.Protected guard={!!session?.user.perfis.includes('cliente')}>
+          <Stack.Protected
+            guard={
+              session?.mode === 'cliente' &&
+              session.user.perfis.includes('cliente')
+            }
+          >
             <Stack.Screen name="(cliente)" />
           </Stack.Protected>
-          <Stack.Protected guard={!!session?.user.perfis.includes('produtor')}>
+          <Stack.Protected
+            guard={
+              session?.mode === 'produtor' &&
+              session.user.perfis.includes('produtor')
+            }
+          >
             <Stack.Screen name="(produtor)" />
           </Stack.Protected>
           <Stack.Protected guard={!!session}>

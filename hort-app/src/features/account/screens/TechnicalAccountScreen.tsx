@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { SignOutButton } from '@/features/auth/components/SignOutButton';
 import { useSession } from '@/shared/session/SessionProvider';
 import { Screen, styles } from '@/shared/ui/Screen';
+import { ModeSwitch } from '../components/ModeSwitch';
 export default function TechnicalAccountScreen({
   mode,
 }: {
@@ -32,18 +33,7 @@ export default function TechnicalAccountScreen({
           Sua conta não possui um perfil cliente ou produtor disponível.
         </Text>
       )}
-      {mode === 'cliente' && session?.user.perfis.includes('produtor') && (
-        <Button
-          title="Abrir área do produtor"
-          onPress={() => router.replace('/(produtor)/resumo')}
-        />
-      )}
-      {mode === 'produtor' && session?.user.perfis.includes('cliente') && (
-        <Button
-          title="Abrir área do cliente"
-          onPress={() => router.replace('/(cliente)/catalogo')}
-        />
-      )}
+      <ModeSwitch />
       <SignOutButton />
     </Screen>
   );
