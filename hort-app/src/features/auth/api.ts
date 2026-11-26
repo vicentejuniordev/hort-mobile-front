@@ -1,6 +1,7 @@
 import type { components, paths } from '@/shared/api/generated/schema';
 import { api } from '@/shared/api/client';
 import { ApiError } from '@/shared/api/http';
+import { createPasswordRecovery } from './passwordRecovery';
 import {
   registrationPayload,
   type RegistrationProfile,
@@ -8,6 +9,7 @@ import {
 } from './registration';
 type HealthResponse =
   paths['/api/v1/health/']['get']['responses'][200]['content']['application/json'];
+export const passwordRecovery = createPasswordRecovery(api);
 export async function checkHealth() {
   const result = await api<HealthResponse>('health/');
   if (result?.status !== 'ok')

@@ -158,6 +158,14 @@ export default function LoginScreen() {
               }
             />
           </View>
+          <Pressable
+            accessibilityRole="link"
+            disabled={busy}
+            onPress={() => router.push('/recuperar-senha')}
+            style={styles.recoveryLink}
+          >
+            <Text style={styles.signupLinkText}>Esqueci minha senha</Text>
+          </Pressable>
           {!!feedback && (
             <View
               style={[
@@ -243,6 +251,11 @@ const styles = StyleSheet.create({
   },
   form: { marginTop: 28 },
   passwordField: { marginTop: 20 },
+  recoveryLink: {
+    minHeight: 48,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
   submit: { marginTop: 24, minHeight: 56, borderRadius: 14 },
   visibilityButton: {
     minHeight: 48,

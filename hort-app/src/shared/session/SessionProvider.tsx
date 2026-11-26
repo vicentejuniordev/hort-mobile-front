@@ -13,6 +13,7 @@ type SessionContext = SessionState & {
   signOut: typeof sessionManager.signOut;
   retry: typeof sessionManager.bootstrap;
   dismissNotice: typeof sessionManager.dismissNotice;
+  passwordResetCompleted: typeof sessionManager.passwordResetCompleted;
 };
 const Context = createContext<SessionContext | null>(null);
 export function SessionProvider({ children }: PropsWithChildren) {
@@ -32,6 +33,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         signOut: sessionManager.signOut,
         retry: sessionManager.bootstrap,
         dismissNotice: sessionManager.dismissNotice,
+        passwordResetCompleted: sessionManager.passwordResetCompleted,
       }}
     >
       {children}
