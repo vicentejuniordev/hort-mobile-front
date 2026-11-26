@@ -1,13 +1,15 @@
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { Pressable, StyleSheet } from 'react-native';
 import { authAssets } from './assets';
 export function BackButton({
   circle = false,
   disabled = false,
+  fallback = '/(public)/boas-vindas',
 }: {
   circle?: boolean;
   disabled?: boolean;
+  fallback?: Href;
 }) {
   return (
     <Pressable
@@ -16,9 +18,7 @@ export function BackButton({
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={() =>
-        router.canGoBack()
-          ? router.back()
-          : router.replace('/(public)/boas-vindas')
+        router.canGoBack() ? router.back() : router.replace(fallback)
       }
       style={({ pressed }) => [
         styles.button,

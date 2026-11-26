@@ -653,3 +653,38 @@ test('limpeza após redefinição conserva a navegação pública e bloqueia nov
   await h.login();
   assert.equal(h.manager.getSnapshot().status, 'authenticated');
 });
+
+test('PATCH e DELETE compartilham refresh sem alterar método ou payload', async () => {
+  const h = harness();
+  await h.login();
+  h.handle(async (path, options) => {
+    if (path === 'auth/refresh/') return rotated;
+    if (options.accessToken === pair.access) throw unauthorized();
+    return options.method === 'DELETE' ? undefined : { id: 12 };
+  });
+  const body = {
+    rua: 'Rua de teste, 123',
+    bairro: 'Centro',
+    cidade: 'Fortaleza',
+    estado: 'CE',
+  };
+  await Promise.all([
+    h.manager.request('enderecos/12/', { method: 'PATCH', body }),
+    h.manager.request('enderecos/13/', { method: 'DELETE' }),
+  ]);
+  assert.equal(h.count('auth/refresh/'), 1);
+  const mutations = h.calls.filter((call) =>
+    call.path.startsWith('enderecos/'),
+  );
+  assert.equal(mutations.length, 4);
+  for (const call of mutations) {
+    assert.equal(
+      call.options.method,
+      call.path.includes('/12/') ? 'PATCH' : 'DELETE',
+    );
+    assert.deepEqual(
+      call.options.body,
+      call.options.method === 'PATCH' ? body : undefined,
+    );
+  }
+});
