@@ -9,16 +9,16 @@ import {
 } from 'react-native';
 import { SignOutButton } from '@/features/auth/components/SignOutButton';
 import { useFocusedResource } from '@/shared/lib/useFocusedResource';
-import { authenticatedApi } from '@/shared/session/runtime';
-import type { User } from '@/shared/session/manager';
+import { sessionManager } from '@/shared/session/runtime';
 import { theme } from '@/shared/theme/tokens';
 import { PublicScreen } from '@/shared/ui/PublicScreen';
 import { Button } from '@/shared/ui/Button';
 import { AccountHeader } from '../components/AccountHeader';
 import { accountStyles as common } from '../components/AccountPage';
+import { ModeSwitch } from '../components/ModeSwitch';
 
 const loadAccount = (signal: AbortSignal) =>
-  authenticatedApi<User>('auth/me/', { signal });
+  sessionManager.refreshAccount(signal);
 export default function AccountScreen() {
   const { data, error, loading, reload } = useFocusedResource(loadAccount);
   return (
@@ -89,6 +89,7 @@ export default function AccountScreen() {
         >
           <Text style={common.linkText}>Redefinir senha por e-mail</Text>
         </Pressable>
+        <ModeSwitch />
         <SignOutButton />
       </View>
     </PublicScreen>

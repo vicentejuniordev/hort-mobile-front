@@ -688,3 +688,113 @@ test('PATCH e DELETE compartilham refresh sem alterar método ou payload', async
     );
   }
 });
+
+test('modo inicial deriva dos perfis atuais e não é persistido com as credenciais', async () => {
+  const h = harness();
+  await h.login();
+  assert.equal(h.manager.getSnapshot().session?.mode, 'cliente');
+  h.handle(async (path, options) =>
+    path === 'auth/me/'
+      ? { ...user, perfis: ['produtor'] }
+      : h.fallback(path, options),
+  );
+  await h.manager.bootstrap();
+  assert.equal(h.manager.getSnapshot().session?.mode, 'produtor');
+  assert.equal(JSON.parse(h.disk.value!).mode, undefined);
+});
+test('alternância consulta /me e conserva o mesmo par de tokens', async () => {
+  const h = harness();
+  h.handle(async (path, options) =>
+    path === 'auth/me/'
+      ? { ...user, perfis: ['cliente', 'produtor'] }
+      : h.fallback(path, options),
+  );
+  await h.login();
+  const stored = h.disk.value;
+  const before = h.count('auth/me/');
+  await h.manager.selectMode('produtor');
+  assert.equal(h.count('auth/me/'), before + 1);
+  assert.equal(h.manager.getSnapshot().session?.mode, 'produtor');
+  await h.manager.refreshAccount();
+  assert.equal(h.manager.getSnapshot().session?.mode, 'produtor');
+  await h.manager.selectMode('cliente');
+  assert.equal(h.manager.getSnapshot().session?.mode, 'cliente');
+  assert.equal(h.disk.value, stored);
+});
+test('perfil ausente é rejeitado e remoção do perfil ativo escolhe apenas um permitido', async () => {
+  const h = harness();
+  await h.login();
+  await assert.rejects(h.manager.selectMode('produtor'), {
+    code: 'profile_forbidden',
+  });
+  assert.equal(h.manager.getSnapshot().session?.mode, 'cliente');
+  h.handle(async () => ({ ...user, perfis: ['produtor'] }));
+  await h.manager.refreshAccount();
+  assert.equal(h.manager.getSnapshot().session?.mode, 'produtor');
+  h.handle(async () => ({ ...user, perfis: [] }));
+  await h.manager.refreshAccount();
+  assert.equal(h.manager.getSnapshot().session?.mode, null);
+});
+test('rede indisponível não altera o modo nem remove as credenciais', async () => {
+  const h = harness();
+  await h.login();
+  const stored = h.disk.value;
+  h.handle(async () => {
+    throw new ApiError('Sem rede.');
+  });
+  await assert.rejects(h.manager.selectMode('produtor'));
+  assert.equal(h.manager.getSnapshot().session?.mode, 'cliente');
+  assert.equal(h.disk.value, stored);
+});
+test('consulta de perfis tardia não substitui logout ou outra conta', async () => {
+  const h = harness();
+  await h.login();
+  const pending = deferred<unknown>();
+  h.handle(async (path, options) =>
+    path === 'auth/me/' ? pending.promise : h.fallback(path, options),
+  );
+  const selecting = h.manager.selectMode('produtor');
+  const rejected = assert.rejects(selecting, { code: 'cancelled' });
+  await h.manager.signOut();
+  h.handle(async (path, options) =>
+    path === 'auth/me/' ? { ...user, id: 2 } : h.fallback(path, options),
+  );
+  await h.login();
+  pending.resolve({ ...user, perfis: ['cliente', 'produtor'] });
+  await rejected;
+  assert.equal(h.manager.getSnapshot().session?.user.id, 2);
+  assert.equal(h.manager.getSnapshot().session?.mode, 'cliente');
+});
+test('seleção mais recente prevalece sobre resposta antiga de /me', async () => {
+  const h = harness();
+  await h.login();
+  const pending = deferred<unknown>();
+  let calls = 0;
+  h.handle(async () =>
+    ++calls === 1
+      ? pending.promise
+      : { ...user, perfis: ['cliente', 'produtor'] },
+  );
+  const earlier = h.manager.refreshAccount();
+  const rejected = assert.rejects(earlier, { code: 'cancelled' });
+  await h.manager.selectMode('produtor');
+  pending.resolve(user);
+  await rejected;
+  assert.equal(h.manager.getSnapshot().session?.mode, 'produtor');
+  assert.deepEqual(h.manager.getSnapshot().session?.user.perfis, [
+    'cliente',
+    'produtor',
+  ]);
+});
+test('alternância com access expirado usa o refresh compartilhado existente', async () => {
+  const h = harness();
+  await h.login();
+  h.handle(async (path, options) => {
+    if (path === 'auth/refresh/') return rotated;
+    if (options.accessToken === pair.access) throw unauthorized();
+    return { ...user, perfis: ['cliente', 'produtor'] };
+  });
+  await h.manager.selectMode('produtor');
+  assert.equal(h.count('auth/refresh/'), 1);
+  assert.equal(h.manager.getSnapshot().session?.mode, 'produtor');
+});

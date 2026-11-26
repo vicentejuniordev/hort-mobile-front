@@ -14,6 +14,8 @@ type SessionContext = SessionState & {
   retry: typeof sessionManager.bootstrap;
   dismissNotice: typeof sessionManager.dismissNotice;
   passwordResetCompleted: typeof sessionManager.passwordResetCompleted;
+  selectMode: typeof sessionManager.selectMode;
+  refreshAccount: typeof sessionManager.refreshAccount;
 };
 const Context = createContext<SessionContext | null>(null);
 export function SessionProvider({ children }: PropsWithChildren) {
@@ -34,6 +36,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
         retry: sessionManager.bootstrap,
         dismissNotice: sessionManager.dismissNotice,
         passwordResetCompleted: sessionManager.passwordResetCompleted,
+        selectMode: sessionManager.selectMode,
+        refreshAccount: sessionManager.refreshAccount,
       }}
     >
       {children}

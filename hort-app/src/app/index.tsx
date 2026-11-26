@@ -3,9 +3,9 @@ import { useSession } from '@/shared/session/SessionProvider';
 export default function Index() {
   const { session } = useSession();
   if (!session) return <Redirect href="/(public)/boas-vindas" />;
-  if (session.user.perfis.includes('cliente'))
+  if (session.mode === 'cliente')
     return <Redirect href="/(cliente)/catalogo" />;
-  if (session.user.perfis.includes('produtor'))
+  if (session.mode === 'produtor')
     return <Redirect href="/(produtor)/resumo" />;
   return <Redirect href="/conta" />;
 }

@@ -4,11 +4,23 @@ import type { RequestOptions } from '../api/http';
 export type User = Omit<components['schemas']['Usuario'], 'perfis'> & {
   perfis: ('cliente' | 'produtor')[];
 };
+export type ProfileMode = User['perfis'][number];
+export function availableMode(
+  user: User,
+  preferred?: ProfileMode | null,
+): ProfileMode | null {
+  if (preferred && user.perfis.includes(preferred)) return preferred;
+  return user.perfis.includes('cliente')
+    ? 'cliente'
+    : user.perfis.includes('produtor')
+      ? 'produtor'
+      : null;
+}
 type Tokens = { access: string; refresh: string };
 export type SessionState = {
   status:
     'loading' | 'authenticated' | 'anonymous' | 'unavailable' | 'signingOut';
-  session: { user: User } | null;
+  session: { user: User; mode: ProfileMode | null } | null;
   error: string;
   notice: string;
 };
@@ -92,6 +104,7 @@ export class SessionManager {
   private refreshFlight: { epoch: number; promise: Promise<void> } | null =
     null;
   private cleanupRequired = false;
+  private accountRevision = 0;
 
   private readonly transport: Transport;
   private readonly storage: SessionStorage;
@@ -270,7 +283,10 @@ export class SessionManager {
       }
       const user = userFrom(await this.authorizedRequest('auth/me/'));
       this.assert(epoch);
-      this.update({ status: 'authenticated', session: { user } });
+      this.update({
+        status: 'authenticated',
+        session: { user, mode: availableMode(user) },
+      });
     } catch (error) {
       if (epoch !== this.epoch) return;
       this.update({
@@ -323,7 +339,56 @@ export class SessionManager {
     }
     this.assert(epoch);
     this.tokens = pair;
-    this.update({ status: 'authenticated', session: { user } });
+    this.update({
+      status: 'authenticated',
+      session: { user, mode: availableMode(user) },
+    });
+  };
+  private async currentAccount(signal?: AbortSignal) {
+    const revision = ++this.accountRevision;
+    const epoch = this.epoch;
+    const user = userFrom(await this.request('auth/me/', { signal }));
+    this.assert(epoch);
+    if (revision !== this.accountRevision) throw cancelled();
+    return { user, epoch, revision, signal };
+  }
+  private acceptAccount(
+    result: {
+      user: User;
+      epoch: number;
+      revision: number;
+      signal?: AbortSignal;
+    },
+    mode?: ProfileMode | null,
+  ) {
+    this.assert(result.epoch);
+    if (result.revision !== this.accountRevision || result.signal?.aborted)
+      throw cancelled();
+    this.update({
+      session: {
+        user: result.user,
+        mode: availableMode(result.user, mode ?? this.state.session?.mode),
+      },
+    });
+  }
+  refreshAccount = async (signal?: AbortSignal) => {
+    const result = await this.currentAccount(signal);
+    this.acceptAccount(result);
+    return result.user;
+  };
+  selectMode = async (mode: ProfileMode, signal?: AbortSignal) => {
+    const result = await this.currentAccount(signal);
+    const allowed = result.user.perfis.includes(mode);
+    this.acceptAccount(result, allowed ? mode : undefined);
+    if (!allowed) {
+      this.update({
+        notice: 'Este perfil não está disponível para sua conta.',
+      });
+      throw new SessionError(
+        'Este perfil não está disponível para sua conta.',
+        'profile_forbidden',
+      );
+    }
   };
   private refresh(epoch: number): Promise<void> {
     this.assert(epoch);
