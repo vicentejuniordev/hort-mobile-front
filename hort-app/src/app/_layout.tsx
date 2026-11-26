@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SessionProvider, useSession } from '@/shared/session/SessionProvider';
 import { SessionRecoveryScreen } from '@/features/auth/screens/SessionRecoveryScreen';
 import { NoticeDialog } from '@/shared/ui/NoticeDialog';
+import { PrivateQueryProvider } from '@/shared/query/PrivateQueryProvider';
 function Navigation() {
   const { session, status, notice, dismissNotice } = useSession();
   const blocked =
@@ -56,7 +57,9 @@ export default function RootLayout() {
   return (
     <AppFonts>
       <SessionProvider>
-        <Navigation />
+        <PrivateQueryProvider>
+          <Navigation />
+        </PrivateQueryProvider>
       </SessionProvider>
     </AppFonts>
   );
