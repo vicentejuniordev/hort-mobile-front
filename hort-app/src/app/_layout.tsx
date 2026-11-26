@@ -16,6 +16,8 @@ function Navigation() {
       ) : (
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
+          <Stack.Screen name="recuperar-senha" />
+          <Stack.Screen name="reset-password" />
           <Stack.Protected guard={!session}>
             <Stack.Screen name="(public)" />
           </Stack.Protected>

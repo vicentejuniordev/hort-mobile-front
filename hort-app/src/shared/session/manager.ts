@@ -190,11 +190,16 @@ export class SessionManager {
       this.controllers.delete(controller);
     }
   }
-  private async invalidate(epoch: number, notice: string) {
+  private async invalidate(
+    epoch: number,
+    notice: string,
+    status: 'loading' | 'anonymous' = 'loading',
+  ) {
     this.assert(epoch);
     const next = this.begin();
     this.tokens = null;
-    this.update({ status: 'loading', session: null, error: '', notice: '' });
+    this.cleanupRequired = true;
+    this.update({ status, session: null, error: '', notice: '' });
     try {
       await this.clear(next);
       this.cleanupRequired = false;
@@ -460,5 +465,14 @@ export class SessionManager {
         ? 'Você saiu da conta. As sessões foram encerradas em todos os dispositivos.'
         : 'Você saiu apenas deste aparelho. Não foi possível confirmar o encerramento das outras sessões.',
     });
+  };
+  passwordResetCompleted = async () => {
+    // Manter a rota de recuperação montada até poder navegar para o login.
+    // A limpeza pendente continua impedindo login e acesso privado.
+    await this.invalidate(
+      this.epoch,
+      'Senha redefinida. Entre com sua nova senha. As sessões anteriores foram encerradas.',
+      'anonymous',
+    );
   };
 }

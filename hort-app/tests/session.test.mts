@@ -590,3 +590,66 @@ test('nova tentativa de limpeza não espera um bootstrap antigo que ignorou canc
   assert.equal(restored.getSnapshot().session, null);
   assert.equal(h.disk.value, null);
 });
+
+test('redefinição confirmada limpa a sessão local sem chamar logout ou refresh', async () => {
+  const h = harness();
+  await h.login();
+  await h.manager.passwordResetCompleted();
+  assert.equal(h.manager.getSnapshot().status, 'anonymous');
+  assert.equal(h.manager.getSnapshot().session, null);
+  assert.equal(h.disk.value, null);
+  assert.match(h.manager.getSnapshot().notice, /Senha redefinida/);
+  assert.equal(h.count('auth/logout/'), 0);
+  assert.equal(h.count('auth/refresh/'), 0);
+  await assert.rejects(h.manager.request('auth/me/'));
+});
+test('redefinição descarta resposta privada tardia e impede restauração anterior', async () => {
+  const h = harness();
+  await h.login();
+  const pending = deferred<unknown>();
+  h.handle(async (path) => (path === 'private/' ? pending.promise : user));
+  const read = h.manager.request('private/');
+  const rejected = assert.rejects(read, { code: 'cancelled' });
+  await h.manager.passwordResetCompleted();
+  pending.resolve({ id: 99 });
+  await rejected;
+  await h.manager.bootstrap();
+  assert.equal(h.manager.getSnapshot().status, 'anonymous');
+  assert.equal(h.disk.value, null);
+});
+test('falha na limpeza após redefinição bloqueia acesso até concluir a recuperação', async () => {
+  const h = harness();
+  await h.login();
+  h.disk.failClear = true;
+  await assert.rejects(h.manager.passwordResetCompleted(), {
+    code: 'storage_error',
+  });
+  assert.equal(h.manager.getSnapshot().status, 'unavailable');
+  assert.equal(h.manager.getSnapshot().session, null);
+  await assert.rejects(h.login(), { code: 'storage_error' });
+  h.disk.failClear = false;
+  await h.manager.bootstrap();
+  assert.equal(h.disk.value, null);
+  assert.equal(h.manager.getSnapshot().status, 'anonymous');
+});
+
+test('limpeza após redefinição conserva a navegação pública e bloqueia novo acesso até terminar', async () => {
+  const h = harness();
+  await h.login();
+  const pending = deferred();
+  h.storage.clear = async () => {
+    await pending.promise;
+    h.disk.value = null;
+  };
+  const clearing = h.manager.passwordResetCompleted();
+  assert.equal(h.manager.getSnapshot().status, 'anonymous');
+  assert.equal(h.manager.getSnapshot().session, null);
+  await assert.rejects(h.login(), { code: 'storage_error' });
+  await assert.rejects(h.manager.request('auth/me/'), {
+    code: 'unauthenticated',
+  });
+  pending.resolve();
+  await clearing;
+  await h.login();
+  assert.equal(h.manager.getSnapshot().status, 'authenticated');
+});
