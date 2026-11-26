@@ -20,7 +20,7 @@ type Tokens = { access: string; refresh: string };
 export type SessionState = {
   status:
     'loading' | 'authenticated' | 'anonymous' | 'unavailable' | 'signingOut';
-  session: { user: User; mode: ProfileMode | null } | null;
+  session: { user: User; mode: ProfileMode | null; generation: number } | null;
   error: string;
   notice: string;
 };
@@ -285,7 +285,7 @@ export class SessionManager {
       this.assert(epoch);
       this.update({
         status: 'authenticated',
-        session: { user, mode: availableMode(user) },
+        session: { user, mode: availableMode(user), generation: epoch },
       });
     } catch (error) {
       if (epoch !== this.epoch) return;
@@ -341,7 +341,7 @@ export class SessionManager {
     this.tokens = pair;
     this.update({
       status: 'authenticated',
-      session: { user, mode: availableMode(user) },
+      session: { user, mode: availableMode(user), generation: epoch },
     });
   };
   private async currentAccount(signal?: AbortSignal) {
@@ -368,6 +368,7 @@ export class SessionManager {
       session: {
         user: result.user,
         mode: availableMode(result.user, mode ?? this.state.session?.mode),
+        generation: result.epoch,
       },
     });
   }
