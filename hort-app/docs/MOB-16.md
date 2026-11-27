@@ -42,7 +42,7 @@ Preço aceita vírgula ou ponto, até oito dígitos inteiros e dois decimais, se
 
 Lista e formulário cobrem carregamento, vazio, busca sem resultado, erro, atualização, falha de outra página, validação por campo e nova tentativa. Falha de atualização identifica os dados como possivelmente desatualizados. Erros de acesso não conservam a apresentação dos dados. Respostas 401 continuam no mecanismo único de renovação da sessão.
 
-Exclusão protegida (`hortalica_em_cesta`) mantém o produto e explica como desativá-lo na edição ou remover seus vínculos antes de excluir. O aviso oferece abrir a edição, sem desativação automática. Conflito de unidade (`quantidade_fracionada_em_cesta`) orienta ajustar a composição antes de trocar para Unidade. Não se remove o cartão antes da confirmação do DELETE.
+Exclusão protegida (`hortalica_em_cesta`) mantém o produto e explica como desativá-lo na edição ou remover seus vínculos antes de excluir. O aviso oferece abrir a edição, sem desativação automática. Alterar `is_active` não remove o produto das cestas nem desativa os planos existentes; a mensagem não promete esse comportamento. Conflito de unidade (`quantidade_fracionada_em_cesta`) orienta ajustar a composição antes de trocar para Unidade. Não se remove o cartão antes da confirmação do DELETE.
 
 ## Escritas e cache privado
 

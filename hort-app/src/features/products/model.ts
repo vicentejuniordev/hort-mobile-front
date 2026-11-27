@@ -189,7 +189,7 @@ export function productFailure(error: unknown, writing = false) {
   const message = uncertain
     ? 'Não foi possível confirmar a alteração. Consulte seus produtos antes de enviar novamente.'
     : blocked
-      ? 'Este produto está vinculado a cestas. Para retirá-lo de venda, edite o produto e desative “Disponível para venda”. Para excluir, remova antes os vínculos com as cestas.'
+      ? 'Este produto está vinculado a cestas. Você pode desativá-lo na edição; isso não remove os vínculos existentes. Para excluir, remova-o antes das cestas.'
       : value.code === 'quantidade_fracionada_em_cesta'
         ? 'Há quantidades fracionadas deste produto em cestas. Ajuste essas quantidades antes de mudar a unidade para “Unidade”.'
         : missing

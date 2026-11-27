@@ -185,7 +185,7 @@ test('erros mostram conflitos úteis, validações por campo e incerteza em escr
     true,
   );
   assert.equal(protectedDelete.blocked, true);
-  assert.match(protectedDelete.message, /desative/);
+  assert.match(protectedDelete.message, /desativ/);
   assert.match(
     productFailure({ status: 409, code: 'quantidade_fracionada_em_cesta' })
       .message,
