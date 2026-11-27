@@ -55,7 +55,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginatedAssinaturaList"
+                  "$ref": "#/components/schemas/PaginatedAssinaturaLeituraList"
                 }
               }
             },
@@ -159,7 +159,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Assinatura"
+                  "$ref": "#/components/schemas/AssinaturaLeitura"
                 }
               }
             },
@@ -2100,6 +2100,81 @@
           "valor_contratado"
         ]
       },
+      "AssinaturaLeitura": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "cliente": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "plano": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "data_assinatura": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "data_renovacao": {
+            "type": "string",
+            "format": "date",
+            "readOnly": true
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "data_cancelamento": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "nullable": true
+          },
+          "valor_contratado": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,18}(?:\\.\\d{0,2})?$",
+            "readOnly": true
+          },
+          "programacoes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EntregaProgramada"
+            },
+            "readOnly": true
+          },
+          "plano_atual": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlanoAtualAssinatura"
+              }
+            ],
+            "readOnly": true,
+            "description": "Dados atuais do plano, cestas, itens e produtos, inclusive se o plano estiver desativado. Não são um snapshot da contratação: nomes, composição e preços podem mudar. O valor histórico permanece em valor_contratado e os dias contratados permanecem em programacoes. Cestas adicionadas depois não criam programações na assinatura."
+          }
+        },
+        "required": [
+          "cliente",
+          "data_assinatura",
+          "data_cancelamento",
+          "data_renovacao",
+          "id",
+          "plano",
+          "plano_atual",
+          "programacoes",
+          "status",
+          "valor_contratado"
+        ]
+      },
       "CadastroClienteInput": {
         "type": "object",
         "description": "Campos comuns a cliente e produtor (RF001).",
@@ -2516,7 +2591,7 @@
           "usuario"
         ]
       },
-      "PaginatedAssinaturaList": {
+      "PaginatedAssinaturaLeituraList": {
         "type": "object",
         "required": [
           "count",
@@ -2542,7 +2617,7 @@
           "results": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Assinatura"
+              "$ref": "#/components/schemas/AssinaturaLeitura"
             }
           }
         }
@@ -2854,7 +2929,7 @@
           },
           "periodicidade_semanal": {
             "type": "integer",
-            "maximum": 9223372036854775807,
+            "maximum": 9223372036854776000,
             "minimum": 1,
             "format": "int64"
           },
@@ -2893,7 +2968,7 @@
           },
           "stock": {
             "type": "integer",
-            "maximum": 9223372036854775807,
+            "maximum": 9223372036854776000,
             "minimum": 0,
             "format": "int64"
           },
@@ -2936,7 +3011,7 @@
           },
           "periodicidade_semanal": {
             "type": "integer",
-            "maximum": 9223372036854775807,
+            "maximum": 9223372036854776000,
             "minimum": 1,
             "format": "int64"
           },
@@ -2951,6 +3026,59 @@
           "nome",
           "periodicidade_semanal",
           "produtor"
+        ]
+      },
+      "PlanoAtualAssinatura": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "produtor": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "nome": {
+            "type": "string",
+            "readOnly": true
+          },
+          "categoria": {
+            "type": "string",
+            "readOnly": true
+          },
+          "periodicidade_semanal": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "valor": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,18}(?:\\.\\d{0,2})?$",
+            "readOnly": true
+          },
+          "cestas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CestaCatalogo"
+            },
+            "readOnly": true
+          },
+          "is_ativo": {
+            "type": "boolean",
+            "readOnly": true,
+            "title": "Ativo"
+          }
+        },
+        "required": [
+          "categoria",
+          "cestas",
+          "id",
+          "is_ativo",
+          "nome",
+          "periodicidade_semanal",
+          "produtor",
+          "valor"
         ]
       },
       "PlanoCatalogo": {
@@ -3029,7 +3157,7 @@
           },
           "stock": {
             "type": "integer",
-            "maximum": 9223372036854775807,
+            "maximum": 9223372036854776000,
             "minimum": 0,
             "format": "int64"
           },

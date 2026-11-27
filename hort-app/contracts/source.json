@@ -1,6 +1,6 @@
 {
-  "capturedOn": "2026-11-19",
+  "capturedOn": "2026-11-27",
   "source": "django-spectacular-local-export",
-  "backendRevision": "530f6b5e80578a22442eee849aee2623456ee547",
-  "schemaSha256": "0450d9e738214f4306a4517966fdf889454efbe020232482cdf6cc51a4ecd41e"
+  "backendRevision": "0baf1abe912c321f1f506bf85c6e69ec6ba8dafb",
+  "schemaSha256": "6c49df345b2ce1686c08131f1bf40fa369f5832d3f7f15c54cb761f8b83655fb"
 }
