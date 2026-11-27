@@ -5,6 +5,7 @@ import {
   Text,
   type StyleProp,
   type ViewStyle,
+  type TextStyle,
 } from 'react-native';
 import { theme } from '@/shared/theme/tokens';
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
   variant?: 'primary' | 'login';
   compact?: boolean;
   style?: StyleProp<ViewStyle>;
+  labelStyle?: StyleProp<TextStyle>;
 };
 export function Button({
   label,
@@ -24,6 +26,7 @@ export function Button({
   variant = 'primary',
   compact,
   style,
+  labelStyle,
 }: Props) {
   const blocked = disabled || loading;
   return (
@@ -51,6 +54,7 @@ export function Button({
           styles.label,
           compact && styles.compactLabel,
           variant === 'login' && styles.loginLabel,
+          labelStyle,
         ]}
       >
         {label}
