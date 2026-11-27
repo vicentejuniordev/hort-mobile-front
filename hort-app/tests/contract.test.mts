@@ -14,6 +14,11 @@ import {
   producerRegistration,
   subscribeInput,
   subscription,
+  subscriptionRead,
+  inactiveSubscriptionRead,
+  cancelledSubscriptionRead,
+  legacySubscriptionRead,
+  subscriptionsPage,
 } from './fixtures/mobile-api.mts';
 const schemaText = await readFile(
   new URL('../contracts/openapi.json', import.meta.url),
@@ -119,6 +124,69 @@ test('cancelamento preserva valor e programação, sem supor cobrança executada
   );
   assert.equal('pagamento' in subscription, false);
   assert.equal('endereco' in subscription, false);
+});
+
+test('leitura de assinatura tem contrato próprio e plano atual explícito, mesmo desativado', () => {
+  const read =
+    schema.paths['/api/v1/assinaturas/{id}/'].get.responses['200'].content[
+      'application/json'
+    ].schema;
+  assert.equal(read.$ref, '#/components/schemas/AssinaturaLeitura');
+  assert.equal(
+    schema.paths['/api/v1/assinaturas/'].get.responses['200'].content[
+      'application/json'
+    ].schema.$ref,
+    '#/components/schemas/PaginatedAssinaturaLeituraList',
+  );
+  const current =
+    schema.components.schemas.AssinaturaLeitura.properties.plano_atual;
+  assert.equal(current.readOnly, true);
+  assert.match(current.description, /Não são um snapshot/);
+  assert.ok(
+    schema.components.schemas.PlanoAtualAssinatura.required.includes(
+      'is_ativo',
+    ),
+  );
+  assert.equal(subscriptionRead.plano_atual.is_ativo, true);
+  assert.equal(inactiveSubscriptionRead.plano_atual.is_ativo, false);
+  assert.equal(subscriptionsPage.results[0].id, inactiveSubscriptionRead.id);
+});
+test('fixtures distinguem composição e valor atuais do histórico contratado', () => {
+  const changed = inactiveSubscriptionRead;
+  assert.equal(changed.plano, changed.plano_atual.id);
+  assert.equal(changed.valor_contratado, subscription.valor_contratado);
+  assert.notEqual(changed.plano_atual.valor, changed.valor_contratado);
+  assert.notEqual(changed.plano_atual.nome, offer.nome);
+  assert.equal(changed.plano_atual.cestas[0].itens[0].hortalica.price, '4.00');
+  assert.equal(changed.plano_atual.cestas[0].itens[0].quantidade, '3.000');
+  assert.deepEqual(changed.programacoes, subscription.programacoes);
+  assert.deepEqual(
+    cancelledSubscriptionRead.programacoes,
+    changed.programacoes,
+  );
+  assert.equal(cancelledSubscriptionRead.status, 'cancelada');
+  assert.equal(
+    cancelledSubscriptionRead.valor_contratado,
+    subscription.valor_contratado,
+  );
+  assert.deepEqual(legacySubscriptionRead.programacoes, []);
+});
+test('respostas de comando mantêm contrato original para repetição idempotente', () => {
+  for (const [path, code] of [
+    ['/api/v1/assinaturas/', '201'],
+    ['/api/v1/assinaturas/{id}/cancelar/', '200'],
+  ]) {
+    assert.equal(
+      schema.paths[path].post.responses[code].content['application/json'].schema
+        .$ref,
+      '#/components/schemas/Assinatura',
+    );
+  }
+  assert.equal(
+    'plano_atual' in schema.components.schemas.Assinatura.properties,
+    false,
+  );
+  assert.equal('plano_atual' in subscription, false);
 });
 
 test('check da API consulta somente health e schema, sem credenciais', async () => {

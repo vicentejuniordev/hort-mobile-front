@@ -501,6 +501,23 @@ export interface components {
       readonly valor_contratado: string;
       readonly programacoes: components['schemas']['EntregaProgramada'][];
     };
+    AssinaturaLeitura: {
+      readonly id: number;
+      readonly cliente: number;
+      readonly plano: number;
+      /** Format: date-time */
+      readonly data_assinatura: string;
+      /** Format: date */
+      readonly data_renovacao: string;
+      readonly status: components['schemas']['StatusEnum'];
+      /** Format: date-time */
+      readonly data_cancelamento: string | null;
+      /** Format: decimal */
+      readonly valor_contratado: string;
+      readonly programacoes: components['schemas']['EntregaProgramada'][];
+      /** @description Dados atuais do plano, cestas, itens e produtos, inclusive se o plano estiver desativado. Não são um snapshot da contratação: nomes, composição e preços podem mudar. O valor histórico permanece em valor_contratado e os dias contratados permanecem em programacoes. Cestas adicionadas depois não criam programações na assinatura. */
+      readonly plano_atual: components['schemas']['PlanoAtualAssinatura'];
+    };
     /** @description Campos comuns a cliente e produtor (RF001). */
     CadastroClienteInput: {
       nome: string;
@@ -612,7 +629,7 @@ export interface components {
       readonly refresh: string;
       readonly usuario: components['schemas']['Usuario'];
     };
-    PaginatedAssinaturaList: {
+    PaginatedAssinaturaLeituraList: {
       /** @example 123 */
       count: number;
       /**
@@ -625,7 +642,7 @@ export interface components {
        * @example http://api.example.org/accounts/?page=2
        */
       previous?: string | null;
-      results: components['schemas']['Assinatura'][];
+      results: components['schemas']['AssinaturaLeitura'][];
     };
     PaginatedCestaList: {
       /** @example 123 */
@@ -789,6 +806,18 @@ export interface components {
       /** Ativo */
       is_ativo?: boolean;
     };
+    PlanoAtualAssinatura: {
+      readonly id: number;
+      readonly produtor: number;
+      readonly nome: string;
+      readonly categoria: string;
+      readonly periodicidade_semanal: number;
+      /** Format: decimal */
+      readonly valor: string;
+      readonly cestas: components['schemas']['CestaCatalogo'][];
+      /** Ativo */
+      readonly is_ativo: boolean;
+    };
     PlanoCatalogo: {
       readonly id: number;
       readonly produtor: number;
@@ -889,7 +918,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['PaginatedAssinaturaList'];
+          'application/json': components['schemas']['PaginatedAssinaturaLeituraList'];
         };
       };
     };
@@ -936,7 +965,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Assinatura'];
+          'application/json': components['schemas']['AssinaturaLeitura'];
         };
       };
     };

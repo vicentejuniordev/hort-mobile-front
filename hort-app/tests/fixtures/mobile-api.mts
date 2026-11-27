@@ -136,6 +136,58 @@ export const cancelledSubscription = {
   status: 'cancelada',
   data_cancelamento: '2026-11-20T12:00:00Z',
 } satisfies Schemas['Assinatura'];
+
+// GET usa leitura enriquecida; comandos/idempotência continuam usando Assinatura.
+type SubscriptionRead =
+  paths['/api/v1/assinaturas/{id}/']['get']['responses'][200]['content']['application/json'];
+export const subscriptionRead = {
+  ...subscription,
+  plano_atual: { ...offer, is_ativo: true },
+} satisfies SubscriptionRead;
+export const inactiveSubscriptionRead = {
+  ...subscriptionRead,
+  plano_atual: {
+    ...offer,
+    nome: 'Nome atual do plano desativado',
+    is_ativo: false,
+    valor: '22.00',
+    cestas: offer.cestas.map((basket) =>
+      basket.id === 401
+        ? {
+            ...basket,
+            nome: 'Nome atual da cesta',
+            itens: [
+              {
+                id: 501,
+                hortalica: {
+                  ...lettuce,
+                  name: 'Alface atual',
+                  price: '4.00',
+                  is_active: false,
+                },
+                quantidade: '3.000',
+              },
+            ],
+          }
+        : basket,
+    ),
+  },
+} satisfies SubscriptionRead;
+export const cancelledSubscriptionRead = {
+  ...inactiveSubscriptionRead,
+  status: 'cancelada',
+  data_cancelamento: cancelledSubscription.data_cancelamento,
+} satisfies SubscriptionRead;
+export const legacySubscriptionRead = {
+  ...inactiveSubscriptionRead,
+  programacoes: [],
+} satisfies SubscriptionRead;
+export const subscriptionsPage = {
+  count: 1,
+  next: null,
+  previous: null,
+  results: [inactiveSubscriptionRead],
+} satisfies paths['/api/v1/assinaturas/']['get']['responses'][200]['content']['application/json'];
 export const health = {
   status: 'ok',
 } satisfies paths['/api/v1/health/']['get']['responses'][200]['content']['application/json'];
@@ -157,6 +209,11 @@ export const conflictError = {
 
 type Assert<T extends true> = T;
 export type ContractAssertions = [
+  Assert<
+    Schemas['AssinaturaLeitura']['plano_atual']['is_ativo'] extends boolean
+      ? true
+      : false
+  >,
   Assert<Schemas['PlanoCatalogo']['valor'] extends string ? true : false>,
   Assert<
     Schemas['Assinatura']['valor_contratado'] extends string ? true : false
