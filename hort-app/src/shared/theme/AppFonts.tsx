@@ -10,6 +10,7 @@ import {
 import { theme } from './tokens';
 
 const fonts = {
+  InterSemiBold: require('@expo-google-fonts/inter/600SemiBold/Inter_600SemiBold.ttf'),
   PoppinsRegular: require('@expo-google-fonts/poppins/400Regular/Poppins_400Regular.ttf'),
   PoppinsMedium: require('@expo-google-fonts/poppins/500Medium/Poppins_500Medium.ttf'),
   PoppinsSemiBold: require('@expo-google-fonts/poppins/600SemiBold/Poppins_600SemiBold.ttf'),
