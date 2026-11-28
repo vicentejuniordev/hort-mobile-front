@@ -46,3 +46,40 @@ jobs:
       - run: npm test
       - name: Export Android bundle (no APK or cloud build)
         run: npx expo export --platform android --output-dir /tmp/hort-android-export
+
+  offer-e2e:
+    # Enable after configuring a read-only token for the private backend.
+    if: vars.HORT_OFFER_E2E_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: hort-app
+    env:
+      CI: "1"
+      EXPO_NO_TELEMETRY: "1"
+      HORT_E2E_BACKEND_DIR: ${{ github.workspace }}/offer-e2e-backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Checkout the backend contract used by this journey
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: vicentejuniordev/hort-backend
+          token: ${{ secrets.HORT_BACKEND_READ_TOKEN }}
+          ref: 3872e9ecb12e47df8653a1ce74bb2700f30e33d6
+          path: offer-e2e-backend
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: hort-app/package-lock.json
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.12"
+      - run: pip install -r "$HORT_E2E_BACKEND_DIR/requirements.txt"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e:offers
