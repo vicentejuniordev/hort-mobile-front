@@ -105,6 +105,8 @@ export class SessionManager {
     null;
   private cleanupRequired = false;
   private accountRevision = 0;
+  private privateDataCleanupRequired = false;
+  private readonly clearPrivateData: () => Promise<void>;
 
   private readonly transport: Transport;
   private readonly storage: SessionStorage;
@@ -113,10 +115,12 @@ export class SessionManager {
     transport: Transport,
     storage: SessionStorage,
     apiIdentity: () => string,
+    clearPrivateData: () => Promise<void> = async () => {},
   ) {
     this.transport = transport;
     this.storage = storage;
     this.apiIdentity = apiIdentity;
+    this.clearPrivateData = clearPrivateData;
   }
   getSnapshot = () => this.state;
   subscribe = (listener: () => void) => {
@@ -150,6 +154,11 @@ export class SessionManager {
     await this.serialize(async () => {
       this.assert(epoch);
       try {
+        if (this.privateDataCleanupRequired) {
+          await this.clearPrivateData();
+          this.assert(epoch);
+          this.privateDataCleanupRequired = false;
+        }
         await this.storage.clear();
       } catch {
         throw storageError();
@@ -482,6 +491,7 @@ export class SessionManager {
     if (this.state.status === 'signingOut') return;
     const pair = this.tokens;
     const rotationPending = !!this.refreshFlight;
+    this.privateDataCleanupRequired = true;
     const epoch = this.begin();
     this.tokens = null;
     this.update({ status: 'signingOut', session: null, error: '', notice: '' });
@@ -533,6 +543,7 @@ export class SessionManager {
     });
   };
   passwordResetCompleted = async () => {
+    this.privateDataCleanupRequired = true;
     // Manter a rota de recuperação montada até poder navegar para o login.
     // A limpeza pendente continua impedindo login e acesso privado.
     await this.invalidate(

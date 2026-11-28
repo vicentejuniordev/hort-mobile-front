@@ -130,3 +130,22 @@ test('aceita 204 e impede caminhos externos', async () => {
       error instanceof ApiError && error.code === 'configuration_error',
   );
 });
+
+test('restringe Idempotency-Key à contratação e rejeita chave vazia/longa/injeção', async () => {
+  let calls = 0;
+  const request = createHttpClient(base, async () => {
+    calls++;
+    return Response.json({});
+  });
+  for (const key of ['', 'x'.repeat(129), 'key\r\nAuthorization: other']) {
+    await assert.rejects(
+      request('assinaturas/', { method: 'POST', idempotencyKey: key }),
+      (error: unknown) => (error as ApiError).code === 'configuration_error',
+    );
+  }
+  await assert.rejects(
+    request('auth/login/', { method: 'POST', idempotencyKey: 'key' }),
+  );
+  await assert.rejects(request('assinaturas/', { idempotencyKey: 'key' }));
+  assert.equal(calls, 0);
+});
