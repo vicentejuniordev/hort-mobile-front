@@ -20,6 +20,7 @@ export type RequestOptions = {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
   body?: unknown;
   accessToken?: string;
+  idempotencyKey?: string;
   signal?: AbortSignal;
 };
 const isObject = (value: unknown): value is Record<string, unknown> =>
@@ -42,6 +43,18 @@ export function createHttpClient(
     ) {
       throw new ApiError('Caminho de API inválido.', 0, 'configuration_error');
     }
+    if (
+      options.idempotencyKey !== undefined &&
+      (!/^[A-Za-z0-9_-]{1,128}$/.test(options.idempotencyKey) ||
+        path !== 'assinaturas/' ||
+        options.method !== 'POST')
+    ) {
+      throw new ApiError(
+        'Chave de contratação inválida.',
+        0,
+        'configuration_error',
+      );
+    }
     const url = new URL(path, baseUrl());
     const controller = new AbortController();
     let timedOut = false;
@@ -58,6 +71,9 @@ export function createHttpClient(
         signal: controller.signal,
         headers: {
           Accept: 'application/json',
+          ...(options.idempotencyKey && {
+            'Idempotency-Key': options.idempotencyKey,
+          }),
           ...(options.body !== undefined && {
             'Content-Type': 'application/json',
           }),
