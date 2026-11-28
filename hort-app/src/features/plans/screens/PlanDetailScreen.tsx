@@ -21,6 +21,7 @@ export default function PlanDetailScreen() {
   const command = usePlanCommand();
   const [confirm, retainConfirmation] = useState<PlanCommand | null>(null);
   const [confirmVisible, setConfirmVisible] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
   function setConfirm(action: PlanCommand | null) {
     if (action) retainConfirmation(action);
     setConfirmVisible(!!action);
@@ -43,7 +44,14 @@ export default function PlanDetailScreen() {
     if (!confirmVisible || !confirm || blocked) return;
     const action = confirm;
     setConfirm(null);
+    setSuccess(null);
     const result = await command.run(action);
+    if (result !== null && action.kind === 'publishPlan')
+      setSuccess(
+        action.active
+          ? 'Oferta publicada no catálogo.'
+          : 'Oferta desativada. O histórico de assinaturas foi preservado.',
+      );
     if (result !== null && action.kind === 'removePlan')
       router.dismissTo('/(produtor)/planos');
   }
@@ -83,6 +91,17 @@ export default function PlanDetailScreen() {
                 </Text>
                 <Button
                   compact
+                  label="Ver prévia da oferta"
+                  disabled={blocked}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/(produtor)/planos/[id]/previa',
+                      params: { id: plan.id },
+                    })
+                  }
+                />
+                <Button
+                  compact
                   label="Editar dados do plano"
                   disabled={blocked}
                   onPress={() =>
@@ -113,6 +132,11 @@ export default function PlanDetailScreen() {
                   }
                 />
               </View>
+              {success && (
+                <Text accessibilityRole="status" style={styles.text}>
+                  {success}
+                </Text>
+              )}
               <CommandFeedback
                 failure={command.failure}
                 fallback="/(produtor)/planos"
