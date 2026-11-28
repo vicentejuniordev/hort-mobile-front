@@ -1,10 +1,8 @@
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '@/shared/theme/tokens';
-import { NoticeDialog } from '@/shared/ui/NoticeDialog';
 import { CatalogState } from '../components/CatalogState';
 import { useCatalogOffer } from '../hooks';
 import {
@@ -23,7 +21,6 @@ export default function OfferScreen() {
   const id = catalogId(params.id);
   const basketId = catalogId(params.cestaId);
   const query = useCatalogOffer(id ?? 0);
-  const [notice, setNotice] = useState(false);
   const offer =
     query.failure && !query.failure.canRetry ? undefined : query.data;
   const basket = offer && findBasket(offer, basketId);
@@ -166,7 +163,12 @@ export default function OfferScreen() {
                     )}
                     <Pressable
                       accessibilityRole="button"
-                      onPress={() => setNotice(true)}
+                      onPress={() =>
+                        router.push({
+                          pathname: '/(cliente)/assinaturas/contratar',
+                          params: { plano: offer.id },
+                        })
+                      }
                       style={({ pressed }) => [
                         styles.subscribeTarget,
                         pressed && { opacity: 0.7 },
@@ -194,12 +196,6 @@ export default function OfferScreen() {
           )}
         </View>
       </ScrollView>
-      <NoticeDialog
-        visible={notice}
-        onClose={() => setNotice(false)}
-        title="Contratação em breve"
-        message="A contratação de planos ainda não está disponível no app. Por enquanto, você pode consultar os valores e a composição das cestas."
-      />
     </SafeAreaView>
   );
 }

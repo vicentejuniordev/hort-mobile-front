@@ -40,11 +40,12 @@ export function useCatalog(filters: CatalogFilters = {}) {
     searchPending: search !== (filters.search ?? ''),
   };
 }
-export function useCatalogOffer(id: number) {
+export function useCatalogOffer(id: number, fresh = false) {
   const session = useSession();
   const focused = useIsFocused();
   const query = useQuery({
     ...catalogDetailOptions(api, privateScope(session) ?? 'guest', id),
+    ...(fresh && { staleTime: 0 }),
     enabled: !!session.session && focused && Number.isSafeInteger(id) && id > 0,
     subscribed: focused,
   });

@@ -129,6 +129,9 @@ export class SubscriptionCheckout {
     this.newKey = newKey;
     this.changed = changed;
   }
+  async waitUntilIdle() {
+    await this.flight?.catch(() => {});
+  }
   get busy() {
     return !!this.flight || this.clearing;
   }

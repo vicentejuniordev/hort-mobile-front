@@ -41,7 +41,11 @@ export function useSubscriptionCheckout() {
     lifecycle.current = lease;
     if (enabled) {
       void subscriptionCheckout
-        .restore()
+        .waitUntilIdle()
+        .then(() => {
+          if (!lease.active) return null;
+          return subscriptionCheckout.restore();
+        })
         .then((intent) => {
           if (lease.active)
             setView({ scope, intent, busy: false, failure: null });
@@ -74,6 +78,7 @@ export function useSubscriptionCheckout() {
         busy: true,
         failure: null,
       }));
+      let result: T | null = null;
       try {
         if (writing) {
           await client.cancelQueries({
@@ -81,15 +86,13 @@ export function useSubscriptionCheckout() {
           });
           if (!active()) return null;
         }
-        const result = await operation();
-        return active() ? result : null;
+        result = await operation();
       } catch (error) {
         if (active())
           setView((previous) => ({
             ...previous,
             failure: checkoutFailure(error),
           }));
-        return null;
       } finally {
         if (active()) {
           try {
@@ -108,6 +111,7 @@ export function useSubscriptionCheckout() {
         }
         running.current = false;
       }
+      return active() ? result : null;
     },
     [enabled, scope, client],
   );
@@ -117,6 +121,7 @@ export function useSubscriptionCheckout() {
     busy: enabled && (!visible || view.busy),
     failure: visible ? view.failure : null,
     enabled,
+    loaded: visible,
     restore: () => run(subscriptionCheckout.restore),
     prepare: (
       payload: CheckoutPayload,
