@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import { Tabs } from 'expo-router';
+import { Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/shared/theme/tokens';
 export const unstable_settings = { anchor: 'catalogo' };
@@ -22,7 +23,7 @@ export default function Layout() {
         tabBarLabelStyle: { fontFamily: theme.fonts.medium, fontSize: 12 },
         tabBarItemStyle: {
           borderRadius: 16,
-          marginHorizontal: 12,
+          marginHorizontal: 4,
           marginVertical: 6,
           minHeight: 48,
         },
@@ -39,6 +40,30 @@ export default function Layout() {
               style={{ width: 22.1495, height: 22.1495 }}
               accessible={false}
             />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="assinaturas"
+        options={{
+          title: 'Assinaturas',
+          tabBarIcon: () => (
+            <Image
+              source={require('../../../assets/subscriptions/tab-basket.svg')}
+              style={{ width: 23.65, height: 20 }}
+              accessible={false}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="agenda"
+        options={{
+          title: 'Agenda',
+          tabBarIcon: ({ color }) => (
+            <Text accessible={false} style={{ color, fontSize: 22 }}>
+              ▦
+            </Text>
           ),
         }}
       />

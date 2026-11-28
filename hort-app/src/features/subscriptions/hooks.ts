@@ -1,4 +1,8 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useIsFocused } from 'expo-router';
 import { privateScope } from '@/shared/query/cache';
 import { useSession } from '@/shared/session/SessionProvider';
@@ -11,6 +15,7 @@ import {
   subscriptionDetailOptions,
   subscriptionFailure,
   subscriptionListOptions,
+  subscriptionKeys,
   validReadId,
   type ScheduleFilters,
   type SubscriptionFilters,
@@ -42,6 +47,14 @@ function useCustomerScope() {
       state.session?.mode === 'cliente' &&
       state.session.user.perfis.includes('cliente'),
   };
+}
+export function useRefreshSubscriptions() {
+  const client = useQueryClient();
+  const { scope, enabled } = useCustomerScope();
+  return () =>
+    enabled
+      ? client.invalidateQueries({ queryKey: subscriptionKeys.all(scope) })
+      : Promise.resolve();
 }
 export function useSubscriptions(filters: SubscriptionFilters = {}) {
   const { scope, enabled } = useCustomerScope();
