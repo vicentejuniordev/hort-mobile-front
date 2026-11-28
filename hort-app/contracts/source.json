@@ -1,6 +1,6 @@
 {
-  "capturedOn": "2026-11-27",
-  "source": "django-spectacular-local-export",
-  "backendRevision": "08c89ee21c1a7b1588403c390fad68a7bb939922",
-  "schemaSha256": "3f89452afed332b3370adbbfc232a5c24f105c83828616ddd963a33c227da8b8"
+  "capturedOn": "2026-11-28",
+  "source": "django-spectacular-postgresql-export",
+  "backendRevision": "dc943abfb8b041fabbde8e3c82a6cfd4e4c5cdee",
+  "schemaSha256": "fa2856bf58c5e6d5191eb81cfd7b05ff040723e187ecac47dc9b66fb1c7c50d1"
 }
