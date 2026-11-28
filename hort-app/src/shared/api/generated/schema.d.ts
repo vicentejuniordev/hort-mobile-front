@@ -792,6 +792,8 @@ export interface components {
        * @description Rascunho por padrão. Ative somente com 1 a 7 cestas e valor total positivo.
        */
       is_ativo?: boolean;
+      /** Format: decimal */
+      readonly valor?: string;
     };
     PatchedProduct: {
       readonly id?: number;
@@ -822,6 +824,8 @@ export interface components {
        * @description Rascunho por padrão. Ative somente com 1 a 7 cestas e valor total positivo.
        */
       is_ativo?: boolean;
+      /** Format: decimal */
+      readonly valor: string;
     };
     PlanoAtualAssinatura: {
       readonly id: number;

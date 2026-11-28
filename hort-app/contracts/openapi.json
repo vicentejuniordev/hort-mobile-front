@@ -3164,6 +3164,12 @@
             "type": "boolean",
             "title": "Ativo",
             "description": "Rascunho por padrão. Ative somente com 1 a 7 cestas e valor total positivo."
+          },
+          "valor": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,18}(?:\\.\\d{0,2})?$",
+            "readOnly": true
           }
         }
       },
@@ -3247,6 +3253,12 @@
             "type": "boolean",
             "title": "Ativo",
             "description": "Rascunho por padrão. Ative somente com 1 a 7 cestas e valor total positivo."
+          },
+          "valor": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,18}(?:\\.\\d{0,2})?$",
+            "readOnly": true
           }
         },
         "required": [
@@ -3254,7 +3266,8 @@
           "id",
           "nome",
           "periodicidade_semanal",
-          "produtor"
+          "produtor",
+          "valor"
         ]
       },
       "PlanoAtualAssinatura": {

@@ -282,3 +282,11 @@ test('publicação documenta rascunho e erros de domínio sem remover filtros de
   assert.ok(filters.includes('plano'));
   assert.ok(filters.includes('data_renovacao'));
 });
+
+test('gestão de planos expõe valor calculado somente para leitura, inclusive rascunhos', () => {
+  const plan = schema.components.schemas.Plano;
+  assert.equal(plan.properties.valor.readOnly, true);
+  assert.equal(plan.properties.valor.type, 'string');
+  assert.equal(plan.properties.valor.format, 'decimal');
+  assert.ok(plan.required.includes('valor'));
+});
