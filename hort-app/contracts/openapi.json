@@ -103,7 +103,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Chave única por tentativa de compra; reutilize em retries (1–128 caracteres)."
+            "description": "Chave única por tentativa de compra; reutilize em retries (1–128 caracteres), com o mesmo payload e ordem de programações. Replay devolve a resposta original, mesmo após cancelamento ou alteração/desativação do catálogo; consulte o GET para a situação atual."
           }
         ],
         "tags": [
@@ -156,6 +156,16 @@
             },
             "description": ""
           },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "validation_error: informe exatamente uma programação por cesta e dias ISO 1–7 distintos. Dados/campos/chave inválidos não criam assinatura nem consomem a chave."
+          },
           "409": {
             "content": {
               "application/json": {
@@ -164,7 +174,7 @@
                 }
               }
             },
-            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
+            "description": "Conflitos: plano_inativo, publicacao_cestas_invalidas (1–7 cestas), publicacao_valor_invalido (total arredondado positivo), idempotency_conflict (mesma chave com outros dados, inclusive ordem diferente). Rejeições não criam nova assinatura; uma chave já confirmada continua vinculada à resposta original."
           }
         }
       }
@@ -244,6 +254,26 @@
               }
             },
             "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "validation_error: o cancelamento não recebe campos adicionais."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "not_found: assinatura inexistente ou pertencente a outra conta."
           }
         }
       }
@@ -3156,9 +3186,8 @@
           },
           "periodicidade_semanal": {
             "type": "integer",
-            "maximum": 9223372036854776000,
-            "minimum": 1,
-            "format": "int64"
+            "maximum": 2147483647,
+            "minimum": 1
           },
           "is_ativo": {
             "type": "boolean",
@@ -3202,9 +3231,8 @@
           },
           "stock": {
             "type": "integer",
-            "maximum": 9223372036854776000,
-            "minimum": 0,
-            "format": "int64"
+            "maximum": 2147483647,
+            "minimum": 0
           },
           "unit": {
             "$ref": "#/components/schemas/UnitEnum"
@@ -3245,9 +3273,8 @@
           },
           "periodicidade_semanal": {
             "type": "integer",
-            "maximum": 9223372036854776000,
-            "minimum": 1,
-            "format": "int64"
+            "maximum": 2147483647,
+            "minimum": 1
           },
           "is_ativo": {
             "type": "boolean",
@@ -3399,9 +3426,8 @@
           },
           "stock": {
             "type": "integer",
-            "maximum": 9223372036854776000,
-            "minimum": 0,
-            "format": "int64"
+            "maximum": 2147483647,
+            "minimum": 0
           },
           "unit": {
             "$ref": "#/components/schemas/UnitEnum"

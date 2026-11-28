@@ -191,7 +191,8 @@ export const subscriptionsPage = {
 export const health = {
   status: 'ok',
 } satisfies paths['/api/v1/health/']['get']['responses'][200]['content']['application/json'];
-// O envelope é implementado em common/exceptions.py, mas ainda falta no OpenAPI.
+// O envelope é implementado em common/exceptions.py; os comandos de assinatura
+// documentam 400/409 e cancelamento 400/404 desde a MOB-23.
 export const validationError = {
   error: {
     code: 'validation_error',
@@ -205,7 +206,19 @@ export const conflictError = {
     message: 'Chave já utilizada com outros dados.',
     details: null,
   },
-};
+} satisfies paths['/api/v1/assinaturas/']['post']['responses'][409]['content']['application/json'];
+
+export const subscriptionValidationError = {
+  error: {
+    code: 'validation_error',
+    message: 'Dados inválidos.',
+    details: { programacoes: ['Os dias da semana não podem se repetir.'] },
+  },
+} satisfies paths['/api/v1/assinaturas/']['post']['responses'][400]['content']['application/json'];
+
+export const cancellationNotFound = {
+  error: { code: 'not_found', message: 'Não encontrado.', details: null },
+} satisfies paths['/api/v1/assinaturas/{id}/cancelar/']['post']['responses'][404]['content']['application/json'];
 
 type Assert<T extends true> = T;
 export type ContractAssertions = [

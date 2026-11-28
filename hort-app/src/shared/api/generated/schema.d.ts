@@ -785,7 +785,6 @@ export interface components {
       readonly produtor?: number;
       nome?: string;
       categoria?: string;
-      /** Format: int64 */
       periodicidade_semanal?: number;
       /**
        * Ativo
@@ -803,7 +802,6 @@ export interface components {
       category?: components['schemas']['CategoryEnum'];
       /** Format: decimal */
       price?: string;
-      /** Format: int64 */
       stock?: number;
       unit?: components['schemas']['UnitEnum'];
       is_active?: boolean;
@@ -817,7 +815,6 @@ export interface components {
       readonly produtor: number;
       nome: string;
       categoria: string;
-      /** Format: int64 */
       periodicidade_semanal: number;
       /**
        * Ativo
@@ -857,7 +854,6 @@ export interface components {
       category: components['schemas']['CategoryEnum'];
       /** Format: decimal */
       price: string;
-      /** Format: int64 */
       stock?: number;
       unit: components['schemas']['UnitEnum'];
       is_active?: boolean;
@@ -956,7 +952,7 @@ export interface operations {
     parameters: {
       query?: never;
       header?: {
-        /** @description Chave única por tentativa de compra; reutilize em retries (1–128 caracteres). */
+        /** @description Chave única por tentativa de compra; reutilize em retries (1–128 caracteres), com o mesmo payload e ordem de programações. Replay devolve a resposta original, mesmo após cancelamento ou alteração/desativação do catálogo; consulte o GET para a situação atual. */
         'Idempotency-Key'?: string;
       };
       path?: never;
@@ -976,7 +972,16 @@ export interface operations {
           'application/json': components['schemas']['Assinatura'];
         };
       };
-      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      /** @description validation_error: informe exatamente uma programação por cesta e dias ISO 1–7 distintos. Dados/campos/chave inválidos não criam assinatura nem consomem a chave. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
+      };
+      /** @description Conflitos: plano_inativo, publicacao_cestas_invalidas (1–7 cestas), publicacao_valor_invalido (total arredondado positivo), idempotency_conflict (mesma chave com outros dados, inclusive ordem diferente). Rejeições não criam nova assinatura; uma chave já confirmada continua vinculada à resposta original. */
       409: {
         headers: {
           [name: string]: unknown;
@@ -1026,6 +1031,24 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Assinatura'];
+        };
+      };
+      /** @description validation_error: o cancelamento não recebe campos adicionais. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
+      };
+      /** @description not_found: assinatura inexistente ou pertencente a outra conta. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
         };
       };
     };

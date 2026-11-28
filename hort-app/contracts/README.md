@@ -1,6 +1,6 @@
 # Contrato da API mobile
 
-Baseline capturada em 19/11/2026 a partir do backend local, revisão `530f6b5e80578a22442eee849aee2623456ee547`. O arquivo `source.json` registra origem e SHA-256 do snapshot. A exportação não consulta dados de usuários nem configura homologação.
+Baseline capturada em 19/11/2026 a partir do backend local, revisão `530f6b5e80578a22442eee849aee2623456ee547`. O arquivo `source.json` registra origem e SHA-256 do snapshot. A exportação não consulta dados de usuários nem configura homologação. A revisão atual consta em `source.json`; a MOB-23 acrescenta a documentação de erros da contratação/cancelamento, sem mudar seus payloads de sucesso. A exportação atual foi feita com PostgreSQL: os máximos de estoque/periodicidade são `2147483647`, conforme o banco de destino, em vez do limite int64 inferido anteriormente em SQLite.
 
 - `openapi.json`: OpenAPI 3.0.3 original, sem acrescentar regras que o servidor ainda não implementou.
 - `../src/shared/api/generated/schema.d.ts`: tipos derivados do snapshot; não editar manualmente.
@@ -52,9 +52,9 @@ O utilitário faz somente GET de `health/` e `/api/schema/`, exige `status: ok` 
 
 ## Limitações observadas no schema atual
 
-- O envelope `{error: {code, message, details}}` existe em `common/exceptions.py`, mas não está descrito como resposta de erro no OpenAPI. As fixtures de erro são referências do comportamento do backend, não tipos gerados.
+- O envelope `{error: {code, message, details}}` existe em `common/exceptions.py`. O OpenAPI descreve conflitos de publicação e, desde a MOB-23, contratação 400/409 e cancelamento 400/404. As fixtures correspondentes usam esses tipos; o envelope ainda não está documentado em todos os endpoints/status.
 - Os perfis de `Usuario` são `string[]` no schema. A aplicação mantém a união cliente/produtor e sua validação em runtime; o schema ainda não enumera esses valores.
 - Alguns filtros aplicados no backend não aparecem nos parâmetros OpenAPI. Consultar `plans/filters.py`, `products/filters.py` e `subscriptions/filters.py` antes de consumir filtros novos; documentá-los no backend na MOB-07.
 - Alguns serializers de leitura/escrita compartilham schema. Campos `readOnly` não devem ser enviados pelo formulário; tipos derivados precisam separar a entrada real da resposta ao implementar os CRUDs. Não presumir que todo schema de resposta é payload válido.
 - O limite de sete programações, dias únicos, correspondência exata com as cestas, estoque/unidade, transações e idempotência têm validações adicionais no servidor que tipos TS não expressam.
-- A nova decisão de publicar planos com 1 a 7 cestas e valor positivo ainda não é restrição do backend nem deste snapshot. Ver `../docs/MOB-03.md`.
+- Publicar exige de 1 a 7 cestas e total arredondado positivo desde a MOB-19; o snapshot documenta os códigos de conflito. Ver `../docs/MOB-19.md`. O valor final da contratação é calculado pelo servidor; não há contrato de cotação/aceite de preço.
