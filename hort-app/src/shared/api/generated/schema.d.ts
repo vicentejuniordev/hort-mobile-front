@@ -900,12 +900,20 @@ export interface operations {
   assinaturas_list: {
     parameters: {
       query?: {
+        /** @description Data de renovação prevista (AAAA-MM-DD), sem indicar cobrança executada. */
+        data_renovacao?: string;
         /** @description Qual campo usar ao ordenar os resultados. */
         ordering?: string;
         /** @description Um número de página dentro do conjunto de resultados paginado. */
         page?: number;
         /** @description Número de resultados a serem retornados por página. */
         page_size?: number;
+        plano?: number;
+        /**
+         * @description * `ativa` - ativa
+         *     * `cancelada` - cancelada
+         */
+        status?: 'ativa' | 'cancelada';
       };
       header?: never;
       path?: never;
@@ -1505,6 +1513,10 @@ export interface operations {
   entregas_programadas_list: {
     parameters: {
       query?: {
+        assinatura?: number;
+        cesta?: number;
+        /** @description Dia recorrente ISO: 1 = segunda-feira, 7 = domingo. Não é status de entrega executada. */
+        dia_semana?: number;
         /** @description Qual campo usar ao ordenar os resultados. */
         ordering?: string;
         /** @description Um número de página dentro do conjunto de resultados paginado. */

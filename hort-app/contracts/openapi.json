@@ -12,6 +12,15 @@
         "summary": "Listar minhas assinaturas",
         "parameters": [
           {
+            "in": "query",
+            "name": "data_renovacao",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Data de renovação prevista (AAAA-MM-DD), sem indicar cobrança executada."
+          },
+          {
             "name": "ordering",
             "required": false,
             "in": "query",
@@ -37,6 +46,27 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "plano",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "enum": [
+                "ativa",
+                "cancelada"
+              ],
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "* `ativa` - ativa\n* `cancelada` - cancelada"
           }
         ],
         "tags": [
@@ -1126,6 +1156,32 @@
         "operationId": "entregas_programadas_list",
         "summary": "Listar minhas entregas programadas",
         "parameters": [
+          {
+            "in": "query",
+            "name": "assinatura",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "cesta",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "dia_semana",
+            "schema": {
+              "type": "integer",
+              "maximum": 7,
+              "minimum": 1
+            },
+            "description": "Dia recorrente ISO: 1 = segunda-feira, 7 = domingo. Não é status de entrega executada."
+          },
           {
             "name": "ordering",
             "required": false,
