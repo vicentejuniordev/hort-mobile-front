@@ -416,7 +416,10 @@ export interface paths {
     /** Listar planos */
     get: operations['planos_list'];
     put?: never;
-    /** Criar plano */
+    /**
+     * Criar rascunho de plano
+     * @description Novos planos são inativos por padrão. Monte cestas/itens e publique via PATCH is_ativo=true.
+     */
     post: operations['planos_create'];
     delete?: never;
     options?: never;
@@ -561,6 +564,11 @@ export interface components {
       plano: number;
       programacoes: components['schemas']['EntregaProgramadaInput'][];
     };
+    DetalheErroDominio: {
+      code: string;
+      message: string;
+      details: unknown;
+    };
     /**
      * @description * `1` - Segunda-feira
      *     * `2` - Terça-feira
@@ -602,6 +610,9 @@ export interface components {
       readonly cesta: number;
       readonly dia_semana: components['schemas']['DiaSemanaEnum'];
       readonly ordem: number;
+    };
+    ErroDominio: {
+      error: components['schemas']['DetalheErroDominio'];
     };
     HortalicaCesta: {
       readonly id: number;
@@ -776,7 +787,10 @@ export interface components {
       categoria?: string;
       /** Format: int64 */
       periodicidade_semanal?: number;
-      /** Ativo */
+      /**
+       * Ativo
+       * @description Rascunho por padrão. Ative somente com 1 a 7 cestas e valor total positivo.
+       */
       is_ativo?: boolean;
     };
     PatchedProduct: {
@@ -803,7 +817,10 @@ export interface components {
       categoria: string;
       /** Format: int64 */
       periodicidade_semanal: number;
-      /** Ativo */
+      /**
+       * Ativo
+       * @description Rascunho por padrão. Ative somente com 1 a 7 cestas e valor total positivo.
+       */
       is_ativo?: boolean;
     };
     PlanoAtualAssinatura: {
@@ -953,6 +970,15 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Assinatura'];
+        };
+      };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
         };
       };
     };
@@ -1272,6 +1298,15 @@ export interface operations {
           'application/json': components['schemas']['Cesta'];
         };
       };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
+      };
     };
   };
   cestas_retrieve: {
@@ -1319,6 +1354,15 @@ export interface operations {
           'application/json': components['schemas']['Cesta'];
         };
       };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
+      };
     };
   };
   cestas_destroy: {
@@ -1339,6 +1383,15 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
       };
     };
   };
@@ -1364,6 +1417,15 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Cesta'];
+        };
+      };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
         };
       };
     };
@@ -1629,6 +1691,15 @@ export interface operations {
           'application/json': components['schemas']['HortalicaCesta'];
         };
       };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
+      };
     };
   };
   itens_cesta_retrieve: {
@@ -1671,6 +1742,15 @@ export interface operations {
         };
         content?: never;
       };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
+      };
     };
   };
   itens_cesta_partial_update: {
@@ -1695,6 +1775,15 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['HortalicaCesta'];
+        };
+      };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
         };
       };
     };
@@ -1748,6 +1837,15 @@ export interface operations {
           'application/json': components['schemas']['Plano'];
         };
       };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
+      };
     };
   };
   planos_retrieve: {
@@ -1795,6 +1893,15 @@ export interface operations {
           'application/json': components['schemas']['Plano'];
         };
       };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
+      };
     };
   };
   planos_destroy: {
@@ -1815,6 +1922,15 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
       };
     };
   };
@@ -1840,6 +1956,15 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Plano'];
+        };
+      };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
         };
       };
     };
@@ -1940,6 +2065,15 @@ export interface operations {
           'application/json': components['schemas']['Product'];
         };
       };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
+        };
+      };
     };
   };
   products_destroy: {
@@ -1985,6 +2119,15 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Product'];
+        };
+      };
+      /** @description Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErroDominio'];
         };
       };
     };
