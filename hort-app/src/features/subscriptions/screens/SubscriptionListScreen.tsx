@@ -49,6 +49,11 @@ export default function SubscriptionListScreen() {
             <Text accessibilityRole="header" style={styles.heading}>
               Minhas assinaturas
             </Text>
+            <Button
+              compact
+              label="Retomar contratação salva"
+              onPress={() => router.push('/(cliente)/assinaturas/contratar')}
+            />
             <FilterChips
               options={filters}
               value={status}

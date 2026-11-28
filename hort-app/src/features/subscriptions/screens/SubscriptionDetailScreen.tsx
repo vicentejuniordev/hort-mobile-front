@@ -6,6 +6,7 @@ import {
   offerMoney,
 } from '@/features/catalog/presentation';
 import { useSubscription } from '../hooks';
+import { CancelSubscriptionAction } from '../components/CancelSubscriptionAction';
 import {
   orderedSchedules,
   scheduledBasket,
@@ -94,6 +95,13 @@ export default function SubscriptionDetailScreen() {
                 </Text>
               )}
             </View>
+            <CancelSubscriptionAction
+              key={data.id}
+              subscription={data}
+              refreshedAt={query.dataUpdatedAt}
+              refreshing={query.isFetching}
+              refresh={retry}
+            />
             <Text accessibilityRole="header" style={styles.heading}>
               Programação semanal contratada
             </Text>
