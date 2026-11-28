@@ -155,6 +155,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       }
@@ -730,6 +740,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       }
@@ -817,6 +837,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       },
@@ -864,6 +894,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       },
@@ -895,6 +935,16 @@
         "responses": {
           "204": {
             "description": "No response body"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       }
@@ -1404,6 +1454,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       }
@@ -1490,6 +1550,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       },
@@ -1521,6 +1591,16 @@
         "responses": {
           "204": {
             "description": "No response body"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       }
@@ -1593,7 +1673,8 @@
       },
       "post": {
         "operationId": "planos_create",
-        "summary": "Criar plano",
+        "description": "Novos planos são inativos por padrão. Monte cestas/itens e publique via PATCH is_ativo=true.",
+        "summary": "Criar rascunho de plano",
         "tags": [
           "Planos"
         ],
@@ -1609,7 +1690,7 @@
                     "nome": "Cesta semanal orgânica",
                     "categoria": "Hortaliças",
                     "periodicidade_semanal": 1,
-                    "is_ativo": true
+                    "is_ativo": false
                   },
                   "summary": "Novo plano"
                 }
@@ -1636,6 +1717,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       }
@@ -1723,6 +1814,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       },
@@ -1770,6 +1871,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       },
@@ -1801,6 +1912,16 @@
         "responses": {
           "204": {
             "description": "No response body"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       }
@@ -2006,6 +2127,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       },
@@ -2053,6 +2184,16 @@
               }
             },
             "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroDominio"
+                }
+              }
+            },
+            "description": "Conflito de domínio. Publicação exige de 1 a 7 cestas e valor total arredondado positivo. Códigos: publicacao_cestas_invalidas, publicacao_valor_invalido. Alteração que invalidaria plano ativo é revertida; desative o plano antes de editar. Outros conflitos preservam seus códigos."
           }
         }
       },
@@ -2387,6 +2528,25 @@
           "programacoes"
         ]
       },
+      "DetalheErroDominio": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "nullable": true
+          }
+        },
+        "required": [
+          "code",
+          "details",
+          "message"
+        ]
+      },
       "DiaSemanaEnum": {
         "enum": [
           1,
@@ -2547,6 +2707,17 @@
           "dia_semana",
           "id",
           "ordem"
+        ]
+      },
+      "ErroDominio": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/DetalheErroDominio"
+          }
+        },
+        "required": [
+          "error"
         ]
       },
       "HortalicaCesta": {
@@ -2991,7 +3162,8 @@
           },
           "is_ativo": {
             "type": "boolean",
-            "title": "Ativo"
+            "title": "Ativo",
+            "description": "Rascunho por padrão. Ative somente com 1 a 7 cestas e valor total positivo."
           }
         }
       },
@@ -3073,7 +3245,8 @@
           },
           "is_ativo": {
             "type": "boolean",
-            "title": "Ativo"
+            "title": "Ativo",
+            "description": "Rascunho por padrão. Ative somente com 1 a 7 cestas e valor total positivo."
           }
         },
         "required": [

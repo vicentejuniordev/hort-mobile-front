@@ -246,3 +246,39 @@ test('check preserva falhas HTTP e resposta não JSON', async () => {
     }),
   );
 });
+
+test('publicação documenta rascunho e erros de domínio sem remover filtros de assinaturas', () => {
+  const create = schema.paths['/api/v1/planos/'].post;
+  const examples = create.requestBody.content['application/json'].examples;
+  assert.equal(
+    Object.values(examples).some(
+      (example) =>
+        (example as { value: { is_ativo?: boolean } }).value.is_ativo === false,
+    ),
+    true,
+  );
+  for (const [path, method] of [
+    ['planos/', 'post'],
+    ['planos/{id}/', 'patch'],
+    ['cestas/', 'post'],
+    ['cestas/{id}/', 'delete'],
+    ['itens-cesta/', 'post'],
+    ['itens-cesta/{id}/', 'patch'],
+    ['products/{id}/', 'patch'],
+    ['assinaturas/', 'post'],
+  ]) {
+    const response = schema.paths[`/api/v1/${path}`][method].responses['409'];
+    assert.match(response.description, /publicacao_cestas_invalidas/);
+    assert.match(response.description, /publicacao_valor_invalido/);
+    assert.equal(
+      response.content['application/json'].schema.$ref,
+      '#/components/schemas/ErroDominio',
+    );
+  }
+  const filters = schema.paths['/api/v1/assinaturas/'].get.parameters.map(
+    (parameter: { name: string }) => parameter.name,
+  );
+  assert.ok(filters.includes('status'));
+  assert.ok(filters.includes('plano'));
+  assert.ok(filters.includes('data_renovacao'));
+});
